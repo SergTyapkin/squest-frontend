@@ -1,0 +1,79 @@
+@require 'constants.styl'
+
+.button
+    font-family Arial, monospace
+    text-align center
+    padding 10px
+    border 1px solid secColor1
+    outline rgb(141, 112, 60) solid 1px
+    text-shadow none
+    transition all 0.3s cubic-bezier(0.19, 1, 0.22, 1)
+    cursor pointer
+    white-space nowrap
+    background linear-gradient(90deg,rgba(71,56,20,.4),rgba(84,69,25,.7))
+.button.bg
+    background linear-gradient(20deg, rgba(45, 36, 13, 0.4) 0%, rgba(90, 56, 25, 0.7) 50%, rgba(55, 43, 16, 0.4) 100%)
+.button.rounded
+    border-radius 10px
+.button.highlight
+    box-shadow inset 0 0 10px rgb(105, 88, 70), 0 0 10px rgb(126, 116, 82)
+    transition all 1.25s cubic-bezier(0, 3, 0.22, 1)
+
+
+.button:hover
+    box-shadow inset 0 0 20px rgb(195, 162, 127), 0 0 20px rgb(255, 235, 164)
+
+
+.button.outline
+    transition all 1s cubic-bezier(0.19, 1, 0.22, 1)
+    outline-offset 0
+.button.outline:hover
+    outline-offset 15px
+    outline-color transparent
+
+linkButton.centered
+    display block
+    margin 20px auto
+    width fit-content
+linkButton *
+    pointer-events none
+
+
+float-button-height = 50px
+.float-button
+    cursor pointer
+    overflow hidden
+    position fixed
+    bottom 30px
+    right 30px
+    height float-button-height
+    border-radius (float-button-height / 2)
+
+    padding 10px
+    display flex
+    align-items center
+    text-align center
+    flex-direction row
+    background empColor1
+    box-shadow 3px 3px 5px colorShadow
+    box-sizing border-box
+    transition all 0.3s ease
+    svg
+        transition all 0.3s ease
+        width 40px
+        height 40px
+        fill textColor2
+    .hover-text
+        transition all 0.3s ease
+        overflow hidden
+        width 0
+        pointer-events none
+        opacity 0
+.float-button:hover
+    box-shadow 5px 5px 8px colorShadow
+    .hover-text
+        width 120px
+        opacity 1
+    svg
+        transform scale(1.1)
+        fill textColor1

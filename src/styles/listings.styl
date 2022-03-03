@@ -1,0 +1,124 @@
+@require 'constants.styl'
+
+
+title-background = linear-gradient(20deg, rgba(90, 56, 25, 0.9) 0%, rgba(55, 43, 16, 0.5) 100%) no-repeat
+
+_side-items-background = "rgba(188,116,39, 0.3) 0%, rgba(31,26,9,0.2) 100%) no-repeat"
+side-items-background-left = unquote("linear-gradient(160deg, " + _side-items-background)
+side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-background)
+
+
+.title-container
+    margin 50px 0 20px 0
+    width 100%
+    flex 0 !important
+    display flex
+    align-content stretch
+    justify-content center
+    transition all 0.3s ease
+    > *
+        width 100%
+        padding 20px
+        box-shadow 0 0 10px 0 rgba(162, 116, 14, 0.8), 0 0 15px 0 rgba(34, 28, 4, 0.5) inset
+        transition inherit
+        white-space nowrap
+        text-shadow textLightingNormal2
+        color textColor1
+        > *
+            transition inherit
+            transition-delay 20ms
+
+.title-container.bg
+    background title-background
+
+.title-container.clickable.low-opacity
+    > *
+        opacity 0.5
+.title-container.clickable
+    > *
+        cursor pointer
+        opacity 0.8
+    > *:hover
+        width 150%
+        box-shadow 0 0 20px 0 rgba(198, 165, 91, 0.8), 0 0 10px 0 rgba(59, 50, 17, 0.3) inset
+        color textColor1
+        letter-spacing 2px
+        transition all 0.3s ease
+        text-shadow 0 0 50px #f5f0f0, 0 0 10px #eaacbf, 0 0 15px #eaa093
+        opacity 1
+
+    > *
+        text-align center
+    > *:last-child
+        text-align right
+        background side-items-background-right
+    > *:first-child
+        text-align left
+        background side-items-background-left
+
+    span
+        display inline-block
+
+.listing
+    margin 0
+    padding 0
+    overflow hidden
+    > li
+        list-style-type none
+        padding 10px
+        margin 0
+        width 100%
+        background linear-gradient(20deg, rgba(121, 86, 34, 0.6) 0%, rgba(55, 43, 16, 0) 100%) -50% 50% no-repeat
+        background-size 0
+        box-shadow 0 0 10px 0 rgba(162, 116, 14, 200), 0 0 15px 0 rgb(34, 28, 4, 125) inset
+        transition all 0.3s ease
+        cursor pointer
+        white-space nowrap
+        .choose
+            opacity 0.3
+            margin-left 30px
+            transition all 0.3s ease-out
+            transition-delay 20ms
+    > li.checked,
+    > li:hover
+        box-shadow 0 0 20px 0 rgb(198, 165, 91, 200), 0 0 10px 0 rgb(59, 50, 17, 80) inset
+        color textColor1
+        letter-spacing 2px
+        text-shadow 0 0 50px #f5f0f0, 0 0 10px #eaacbf, 0 0 15px #eaa093
+        .choose
+            opacity 1
+            text-shadow 0 0 8px #e7bfac
+    > li.checked
+        background-size 100%
+        text-shadow 0 0 3px #a29a97
+        > .choose .arrow
+            transform rotate(135deg)
+
+.listing .listing > li
+    padding-left 20px
+    background linear-gradient(91deg,#533d0f,transparent) no-repeat
+    background-size 25px 100%
+
+.arrow
+    width 15px
+    height 15px
+    vertical-align middle
+    border-top 5px solid #a78331
+    border-right 5px solid #d4a740
+    border-radius 7px 0 7px 0
+    margin-bottom 5px
+    transition all 0.3s ease
+    display inline-block
+
+.arrow.right
+    right 0
+    transform rotate(45deg)
+    transition transform 0.3s ease
+    margin-left 20px
+
+.arrow.left
+    right 0
+    transform rotate(225deg)
+    transition transform 0.3s ease
+    margin-right 20px
+

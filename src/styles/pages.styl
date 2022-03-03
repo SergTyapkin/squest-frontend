@@ -1,0 +1,87 @@
+// ABOUT
+.about-page
+  text-align center
+
+  .side-item
+    padding 20px
+
+    ul
+      margin 0
+      padding-left 25px
+
+  .side-item.right
+    .text-max
+      font-size 30px
+
+  .button
+    width fit-content
+    background linear-gradient(90deg, rgba(71, 56, 20, 0.4) 0%, rgba(84,69,25,0.7) 100%) 50% 50% no-repeat
+    margin-top 20px
+    margin-bottom 20px
+
+
+// PROFILE
+.profile-page
+  text-align center
+  > *
+    text-align left
+
+  .form
+    margin-top 30px
+    margin-bottom 30px
+  #form-password
+    margin-top 20px
+    .submit-container
+      margin-top 0
+    #form-password-fields
+      margin-bottom 0
+      transition height 0.25s ease
+  #logout-button
+    margin-top 40px
+
+// QUESTS
+.quests-page
+  #choose-quest-block
+    .title-container
+      margin-bottom 0
+
+  .listing
+    > li
+      padding 20px
+    .listing > li
+      padding-left 40px
+
+  #choose-quest-block,
+  #details-block
+    transition all 1s ease
+    position absolute
+    width 100%
+  #choose-quest-block
+    opacity 1
+    left 0
+    ~ .float-button
+      transition all 0.8s ease
+  #choose-quest-block.closed
+    opacity 0
+    left -100%
+    ~ .float-button
+      right -100%
+  #details-block
+    opacity 1
+    right 0
+  #details-block.closed
+    opacity 0
+    right -100%
+
+// PLAY
+#task-description
+  padding 20px
+#finish-button
+  flex 0 !important
+
+// QUEST-CREATE
+#quest-create-form
+  margin-top 0
+  max-width unset
+  box-sizing border-box
+

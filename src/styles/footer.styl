@@ -1,0 +1,46 @@
+@require 'constants.styl'
+
+body,
+#app
+  display flex
+  flex-direction column
+#app
+  flex auto
+  >:not(footer)
+    flex auto
+footer
+  flex 0 0 auto
+
+
+footer
+  bottom 0
+  width 100%
+
+  margin 0
+  margin-top 80px
+  padding 0
+  padding-bottom 15px
+
+  background linear-gradient(20deg, rgba(84, 67, 24, 0) 0%, rgba(84, 67, 24, 0.6) 50%, rgba(84, 67, 24, 0) 100%) no-repeat
+  border-top solid 2px
+  border-color empColor2
+  box-shadow 0 3px 10px 0 rgba(17, 12, 1, 1) inset, rgba(231, 190, 28, 0.4) 0 0 8px 0
+  list-style none
+
+  li
+    display inline-block
+    padding 10px 15px
+
+    .title
+      text-shadow textLightingHigh2
+      font-size 18px
+      font-family Arial, monospace
+      color textColor1
+    .description
+      text-shadow textLightingNormal2
+      font-size 12px
+      font-family Arial, monospace
+      color textColor4
+
+  a
+    color inherit

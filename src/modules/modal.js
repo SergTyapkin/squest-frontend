@@ -13,7 +13,8 @@ const modalHTML = `
     </span>
 
     <div class="info-container">
-        <div class="text-big">{{ question }}</div>
+        <div class="text-big-x">{{ title }}</div>
+        <div class="text-middle">{{ description }}</div>
     </div>
     
     {{#if prompt }}
@@ -40,16 +41,13 @@ export default class Modal {
         this.modalTemplate = Handlebars.compile(modalHTML);
     }
 
-    async __createModal(question, prompt = false) {
+    async __createModal(title, description = "", prompt = false) {
         return new Promise((resolve) => {
             const background = document.createElement('div');
             background.classList.add('modal-background');
             const modal = document.createElement('div');
             modal.classList.add('modal');
-            modal.innerHTML = this.modalTemplate({
-                prompt: prompt,
-                question: question
-            });
+            modal.innerHTML = this.modalTemplate({title, description, prompt});
             background.appendChild(modal);
 
             const input = modal.querySelector('#modal-prompt-input');
@@ -76,11 +74,11 @@ export default class Modal {
         });
     }
 
-    async prompt(question) {
-        return this.__createModal(question, true);
+    async prompt(title, description) {
+        return this.__createModal(title, description, true);
     }
 
-    async confirm(question) {
-        return this.__createModal(question, false);
+    async confirm(title, description) {
+        return this.__createModal(title, description, false);
     }
 }

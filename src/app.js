@@ -16,6 +16,7 @@ import * as admin from './views/admin.html.js';
 import * as questCreate from './views/questCreate.html.js';
 import * as questEdit from './views/questEdit.html.js';
 import * as myQuests from './views/myQuests.html.js';
+import * as branchEdit from './views/branchEdit.html.js';
 
 const DEFAULT_AVATAR_URL = '/images/default_avatar.png';
 const DEFAULT_BACKGROUND = undefined; //'linear-gradient(30deg, #110612 5%, #153131 15%, #2e143c 60%, #5d4e25 100%)';
@@ -98,6 +99,12 @@ export default class App {
                 urlRegex: /^\/quest-edit\?questId=[0-9]*$/,
                 title: `${this.name} | Изменить квест`,
                 handler: questEdit.handler,
+                authRequired: true
+            },
+            {
+                urlRegex: /^\/branch-edit\?branchId=[0-9]*$/,
+                title: `${this.name} | Изменить ветку`,
+                handler: branchEdit.handler,
                 authRequired: true
             },
             {

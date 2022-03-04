@@ -60,13 +60,40 @@ export function $(elId: string): HTMLElement | null {
     return document.getElementById(elId);
 }
 
+export function forEachChild(el: HTMLElement, callback: (value: HTMLElement | Element, index: number, array: Element[]) => void) {
+    return Array.from(el.children).forEach(callback);
+}
+
+export function getChildrenHeight(el: HTMLElement): number {
+    const children = Array.from(el.children);
+    let res = 0;
+    if (!children)
+        return res;
+    children.forEach((child) => {
+        res += child.scrollHeight;
+    })
+    return res;
+}
 
 
-let _elsTimeout: NodeJS.Timeout;
+const _timedTimeouts: Array<{timeout: NodeJS.Timeout, element: HTMLElement}> = [];
 export function setTimedClass(elements: Array<HTMLElement>, className: string, timeout: number = 1500) {
-    clearTimeout(_elsTimeout);
-    elements.forEach(el => el.classList.add(className));
-    _elsTimeout = setTimeout(() => {
-        elements.forEach(el => el.classList.remove(className));
-    }, timeout);
+    _timedTimeouts.forEach((timeout, idxTime) => {
+        elements.forEach((el, idxEl) => {
+            if (el === timeout.element) {
+                clearTimeout(timeout.timeout);
+                _timedTimeouts.splice(idxTime, 1);
+            }
+        });
+    });
+    elements.forEach(element => {
+        element.classList.add(className);
+
+        _timedTimeouts.push({
+            element: element,
+            timeout: setTimeout(() => element.classList.remove(className), timeout)
+        });
+    });
+
+
 }

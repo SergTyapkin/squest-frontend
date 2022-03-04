@@ -55,7 +55,7 @@ export function handler(element, app) {
                 setTimedClass([nameFields, passwordFields], "error");
                 break;
             default:
-                app.messages.error(`Ошибка ${response.status}!`, 'Произошла непредвиденная ошибка!');
+                app.messages.error(`Ошибка ${response.status}!`, res.info);
         }
     });
 }

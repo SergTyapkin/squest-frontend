@@ -1,3 +1,5 @@
+import {getChildrenHeight} from "./utils";
+
 const hidingTimeouts = [];
 export function show(element, _classname = 'show') {
     element.classList.remove('hide', 'hidden');
@@ -5,8 +7,8 @@ export function show(element, _classname = 'show') {
     hidingTimeouts.forEach((timeout, idx) => {
         if (timeout.element === element) {
             clearTimeout(timeout.timeout);
+            hidingTimeouts.splice(idx, 1);
         }
-        hidingTimeouts.splice(idx, 1);
     });
 }
 export function showfast(element) {
@@ -36,4 +38,12 @@ export function closeRoll(element) {
 export function openRoll(element) {
     element.setAttribute('data-open-roll', '');
     element.style.height = element.scrollHeight + "px";
+}
+export function fastRoll(element) {
+    element.setAttribute('data-open-roll', '');
+    const buffer = element.style.transition;
+    element.style.transition = 'none';
+    element.style.height = 'auto';
+    element.style.height = element.scrollHeight + "px";
+    element.style.transition = buffer;
 }

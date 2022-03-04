@@ -99,26 +99,51 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
     background linear-gradient(91deg,#533d0f,transparent) no-repeat
     background-size 25px 100%
 
-.arrow
-    width 15px
-    height 15px
-    vertical-align middle
-    border-top 5px solid #a78331
-    border-right 5px solid #d4a740
-    border-radius 7px 0 7px 0
-    margin-bottom 5px
-    transition all 0.3s ease
-    display inline-block
 
-.arrow.right
-    right 0
-    transform rotate(45deg)
-    transition transform 0.3s ease
-    margin-left 20px
+.addable-list
+    padding 0
+    list-style none
+    > li
+        margin-top 10px
+        margin-bottom 10px
+        display flex
+        justify-content space-between
 
-.arrow.left
-    right 0
-    transform rotate(225deg)
-    transition transform 0.3s ease
-    margin-right 20px
+        :last-child
+            margin-bottom 0
+        :first-child
+            margin-top 0
 
+        > input
+            flex 1
+            padding 10px
+            box-sizing border-box
+            float left
+        > .radio
+            margin-left 20px
+            margin-right 5px
+        > .button
+            opacity 1
+            transition all 0.3s ease
+            overflow hidden
+            height 40px
+            box-sizing border-box
+            float right
+            display flex
+            align-content center
+            justify-content center
+            .arrow.right
+                margin-left 5px
+        > .button:last-child
+            width 18%
+            margin-left 20px
+        > .button:first-child
+            margin-right 20px
+        > .button.closed
+            opacity 0
+            width 0
+            padding-left 0
+            padding-right 0
+            margin-left 0
+            margin-right 0
+            pointer-events none

@@ -96,75 +96,16 @@ form
     .error
         *
             color #ff8e72
-textarea,
-input
-    border-color #ff8e72
-    //animation error 3s forwards
+        textarea,
+        input
+            border-color #ff8e72
+            //animation error 3s forwards
     .success
         *
             color #c4ff72
-textarea,
-input
-        border-color #c4ff72
-        //animation success 3s forwards
+        textarea,
+        input
+            border-color #c4ff72
+            //animation success 3s forwards
 
 
-@keyframes error
-    0%, 100%
-        color textColor1
-        text-shadow none
-    10%, 50%
-        color #ff8e72
-        text-shadow 0 0 1px #ffb39f
-
-@keyframes success
-    0%, 100%
-        color textColor1
-        text-shadow none
-    10%, 50%
-        color #c4ff72
-        text-shadow 0 0 1px #e2ff9f
-
-.addable-list
-    padding 0
-    list-style none
-    > li
-        margin-top 10px
-        margin-bottom 10px
-        display flex
-        justify-content space-between
-
-        :last-child
-            margin-bottom 0
-        :first-child
-            margin-top 0
-
-        > input
-            flex 1
-            padding 10px
-            box-sizing border-box
-            float left
-        > .radio
-            margin-left 20px
-            margin-right 5px
-        > .button
-            opacity 1
-            transition all 0.3s ease
-            overflow hidden
-            width 18%
-            height 40px
-            margin-left 20px
-            box-sizing border-box
-            float right
-            display flex
-            align-content center
-            justify-content center
-            .arrow.right
-                margin-left 5px
-        > .button.closed
-            opacity 0
-            width 0
-            padding-left 0
-            padding-right 0
-            margin-left 0
-            pointer-events none

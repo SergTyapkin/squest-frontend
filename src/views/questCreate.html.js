@@ -1,6 +1,6 @@
-import {$, setTimedClass} from '../modules/utils';
+import {$, forEachChild, setTimedClass} from '../modules/utils';
 import Handlebars from 'handlebars/dist/cjs/handlebars';
-import {hide, openRoll, show} from "../modules/show-hide";
+import {fastRoll, openRoll} from "../modules/show-hide";
 
 const html = `
 <div class="title-container bg">
@@ -22,7 +22,6 @@ const html = `
         </div>
         <div id="branches-fields">
             <label class="text-big">Ветки <span id="branches-error"></span></label>
-            <div class="info text-small">Останутся только ветки с непустым именем. Чтобы изменить ветку, надо перейти в неё</div>
             <ul id="branches-list" class="addable-list roll-closed">
                 <!-- Branches will be there -->
             </ul>
@@ -54,18 +53,17 @@ const html = `
 
 const branchTemplate = Handlebars.compile(`
 <!--li-->
+    <div class="button rounded"><span class="cross"></span></div>
     <input data-branch-id="{{ id }}" type="text" placeholder="Название ветки" value="{{ title }}">
-    <div class="text-middle button rounded">
-        <span class="mobile-hide">Перейти</span> <span class="arrow right"></span>
-    </div>
 <!--/li-->`)
 
 const permissionTemplate = Handlebars.compile(`
 <!--li-->
+    <div class="button rounded"><span class="cross"></span></div>
     <input type="text" placeholder="Логин пользователя" value="{{ name }}">
     <div class="text-middle radio">
-        <input label="Белый" type="radio" name="{{ id }}" value="false" checked>
-        <input label="Черный" type="radio" name="{{ id }}" value="true">
+        <input label="Белый" type="radio" name="{{ uid }}" value="false" checked>
+        <input label="Черный" type="radio" name="{{ uid }}" value="true">
     </div>
 <!--/li-->`)
 
@@ -102,60 +100,84 @@ export function handler(element, app) {
         branchFields.innerHTML = branchTemplate({id: '', title: ''});
         branchesList.append(branchFields);
 
-        const titleInput = branchFields.firstElementChild;
-        const branchButton = branchFields.lastElementChild;
-        titleInput.addEventListener('input', () => {
-            if (titleInput.value !== "") {
-                branchButton.classList.remove('closed');
-                return;
-            }
-            branchButton.classList.add('closed');
+        const deleteButton = branchFields.firstElementChild;
+        deleteButton.addEventListener('click', () => {
+            branchFields.remove();
+            fastRoll(branchesList);
         });
-        openRoll(branchesList);
+        fastRoll(branchesList);
     });
 
     // click on "new permission"
     let permsCounter = 0;
     newPermButton.addEventListener("click", () => {
         const permFields = document.createElement('li');
-        permFields.innerHTML = permissionTemplate({id: permsCounter++});
+        permFields.innerHTML = permissionTemplate({uid: permsCounter++});
         permList.append(permFields);
+
+        const deleteButton = permFields.firstElementChild;
+        deleteButton.addEventListener('click', async () => {
+            permFields.remove();
+            fastRoll(permList);
+        });
 
         openRoll(permList);
     });
 
+
     // save quest => go to my quests
     saveButton.addEventListener("click", async (event) => {
         event.preventDefault();
+
         const title = titleInput.value.trim();
         const description = descriptionInput.value.trim();
-
-        const branches = [];
-        Array.from(branchesList.children).forEach(branchEl => {
-            const branchName = branchEl.firstElementChild.value.trim()
-            if (branchName !== "")
-                branches.push(branchName);
-        });
-
-        const permissions = [];
-        Array.from(permList.children).forEach(permEl => {
-            const username = permEl.firstElementChild.value.trim()
-            if (username !== "")
-                permissions.push({name: username, isInBlackList: permEl.querySelector('input[type="radio"]:checked').value});
-        });
-
         const isPublished = publishedInput.checked;
 
-        const response = await app.apiPost("/quest", {title, description, branches, permissions, isPublished})
+        let questId;
+        const response = await app.apiPost("/quest", {title, description, isPublished})
+        const resp = await response.json();
         switch (response.status) {
             case 200:
-                await app.goto('/me-quests');
+                questId = resp.id;
                 break;
             case 401:
-                setTimedClass([titleFields, descriptionFields, branchesFields, permissionsFields, publishedFields], "error");
-                break;
+                setTimedClass([titleFields, descriptionFields, publishedFields], "error");
+                return;
             default:
-                app.messages.error(`Ошибка ${response.status}!`, 'Произошла непредвиденная ошибка!');
+                app.messages.error(`Ошибка ${response.status}!`, resp.info);
+                return;
         }
+
+        forEachChild(branchesList, async (el) => {
+            const title = el.querySelector('input').value.trim()
+
+            const response = await app.apiPost('/branch', {questId, title, description: ""});
+            const resp = await response.json();
+
+            if (!response.ok) {
+                setTimedClass([el], "error");
+                app.messages.error(`Ошибка ${response.status}!`, resp.info);
+            } else {
+                setTimedClass([el], "success");
+            }
+        });
+
+        forEachChild(permList, async (el) => {
+            const name = el.querySelector('input[type=text]').value.trim()
+            const isInBlackList = el.querySelector('input[type="radio"]:checked').value;
+
+            const response = await app.apiPost('/quest/privacy', {questId, name, isInBlackList});
+            const resp = await response.json();
+
+            if (!response.ok) {
+                setTimedClass([el], "error");
+                app.messages.error(`Ошибка ${response.status}!`, resp.info);
+            } else {
+                setTimedClass([el], "success");
+            }
+        });
+
+        if (questId !== undefined)
+            await app.goto(`/quest-edit?questId=${questId}`);
     });
 }

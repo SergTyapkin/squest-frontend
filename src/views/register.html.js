@@ -62,8 +62,11 @@ export function handler(element, app) {
             case 401:
                 setTimedClass([nameFields, passwordFields, emailFields], "error");
                 break;
+            case 409:
+                setTimedClass([nameFields, passwordFields, emailFields], "error");
+                break;
             default:
-                app.messages.error(`Ошибка ${response.status}!`, 'Произошла непредвиденная ошибка!');
+                app.messages.error(`Ошибка ${response.status}!`, res.info);
         }
     });
 }

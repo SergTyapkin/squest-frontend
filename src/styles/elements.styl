@@ -1,0 +1,62 @@
+@require 'constants.styl'
+
+
+.arrow
+    width 15px
+    height 15px
+    border-top 5px solid empColor5
+    border-right 5px solid empColor2
+    border-radius 7px 0 7px 0
+    margin-bottom 5px
+    transition all 0.3s ease
+    display inline-block
+
+.arrow.right
+    right 0
+    transform rotate(45deg)
+    transition transform 0.3s ease
+    margin-left 20px
+
+.arrow.left
+    right 0
+    transform rotate(225deg)
+    transition transform 0.3s ease
+    margin-right 20px
+
+cross-size = 20px
+cross-lines-width = 14%
+.cross {
+    width cross-size
+    height cross-size
+    transform: rotate(45deg);
+    position: relative;
+    display: inline-block;
+    transition all 0.3s ease
+    border-radius 50%
+}
+.cross:hover
+    transform: rotate(135deg) scale(1.1);
+.cross:hover:before,
+.cross:hover:after
+    background empColor2
+
+.cross:before, .cross:after {
+    content: "";
+    position: absolute;
+    z-index: -1;
+    background: empColor4;
+}
+.cross:before {
+    top: 0;
+    left: 50%;
+    width: cross-lines-width;
+    margin-left (- cross-lines-width / 2)
+    height: 100%;
+}
+.cross:after {
+    top: 50%;
+    left: 0;
+    height: cross-lines-width;
+    margin-top (- cross-lines-width / 2)
+    width: 100%;
+}

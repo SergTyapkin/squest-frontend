@@ -8,6 +8,7 @@ import './styles/global.styl';
 import './styles/pages.styl';
 import './styles/show-hide.styl';
 import './styles/switches.styl';
+import './styles/elements.styl';
 
 import { registerSW } from './modules/sw-installer.js';
 import App from './app';

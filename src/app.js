@@ -96,13 +96,13 @@ export default class App {
                 authRequired: true
             },
             {
-                urlRegex: /^\/quest-edit\?questId=[0-9]*$/,
+                urlRegex: /^\/quest-edit\?.*$/,
                 title: `${this.name} | Изменить квест`,
                 handler: questEdit.handler,
                 authRequired: true
             },
             {
-                urlRegex: /^\/branch-edit\?branchId=[0-9]*$/,
+                urlRegex: /^\/branch-edit\?.*$/,
                 title: `${this.name} | Изменить ветку`,
                 handler: branchEdit.handler,
                 authRequired: true

@@ -10,7 +10,7 @@ const html = `
     </div>
 </div>
 
-<div id="quest-create-form" class="form">
+<div id="data-edit-form" class="form">
     <div class="fields-container">
         <div id="title-fields">
             <label class="text-big">Название <span id="title-error"></span></label>
@@ -69,7 +69,7 @@ const permissionTemplate = Handlebars.compile(`
 
 export function handler(element, app) {
     element.innerHTML = html;
-    const form = $("quest-create-form");
+    const form = $("data-edit-form");
     const titleFields = $("title-fields");
     const descriptionFields = $("description-fields");
     const branchesFields = $("branches-fields");

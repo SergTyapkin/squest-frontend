@@ -20,7 +20,7 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
         width 100%
         padding 20px
         box-shadow 0 0 10px 0 rgba(162, 116, 14, 0.8), 0 0 15px 0 rgba(34, 28, 4, 0.5) inset
-        transition inherit
+        transition all 0.3s ease
         white-space nowrap
         text-shadow textLightingNormal2
         color textColor1
@@ -48,12 +48,15 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
         opacity 1
 
     > *
-        text-align center
+        display flex
+        align-content center
+        align-items center
+        justify-content center
     > *:last-child
-        text-align right
+        justify-content flex-end
         background side-items-background-right
     > *:first-child
-        text-align left
+        justify-content flex-start
         background side-items-background-left
 
     span

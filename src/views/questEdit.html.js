@@ -10,7 +10,7 @@ const html = `
     </linkButton>
 </div>
 
-<div id="quest-create-form" class="form">
+<div id="data-edit-form" class="form">
     <div class="info-container">
         <div class="text-max">Изменить квест</div>
     </div>
@@ -53,7 +53,7 @@ const html = `
         <input id="save-button" type="submit" value="Сохранить">
     </div>
     
-   <div class="submit-container">
+    <div class="submit-container">
         <input id="delete-button" type="submit" value="Удалить квест">
     </div>
 </div>
@@ -62,9 +62,9 @@ const html = `
 
 const branchTemplate = Handlebars.compile(`
 <!--li-->
-    <div class="button rounded"><span class="cross"></span></div>
+    <div class="button rounded {{#if exists}}closed{{/if}}"><span class="cross"></span></div>
     <input type="text" placeholder="Название ветки" value="{{ title }}">
-    <div class="text-middle button rounded {{#unless opened}}closed{{/unless}}">
+    <div class="text-middle button rounded {{#unless exists}}closed{{/unless}}">
         <span class="mobile-hide">Перейти</span> <span class="arrow right"></span>
     </div>
 <!--/li-->`);
@@ -84,7 +84,7 @@ export async function handler(element, app) {
     const searchParams = new URL(window.location.href).searchParams;
     const questId = searchParams.get('questId');
 
-    const form = $("quest-create-form");
+    const form = $("data-edit-form");
     const titleFields = $("title-fields");
     const descriptionFields = $("description-fields");
     const branchesFields = $("branches-fields");
@@ -122,25 +122,16 @@ export async function handler(element, app) {
     branchesList.innerHTML = "";
     branchesData.forEach((branch) => {
         const branchFields = document.createElement('li');
-        branch.opened = true;
+        branch.exists = true;
         branchFields.innerHTML = branchTemplate(branch);
         branchFields.setAttribute('data-branch-id', branch.id);
         branchesList.append(branchFields);
 
-        const deleteButton = branchFields.firstElementChild;
         const gotoButton = branchFields.lastElementChild;
 
-        deleteButton.addEventListener('click', async () => {
-            const branchId = branchFields.getAttribute('data-branch-id');
-            if (! await app.modal.confirm('Точно удаляем ветку?', 'Будут удалены все задания в ней!'))
-                return;
-            app.apiDelete('/branch', {id: branchId});
-            branchFields.remove();
-            fastRoll(branchesList);
-        });
         gotoButton.addEventListener('click', async () => {
             const branchId = branchFields.getAttribute('data-branch-id');
-            await app.goto(`/branch-edit?branchId=${branchId}`);
+            await app.goto(`/branch-edit?branchId=${branchId}&questId=${questId}&questName=${titleInput.value}`);
         });
     });
     openRoll(branchesList);
@@ -177,23 +168,11 @@ export async function handler(element, app) {
         branchFields.innerHTML = branchTemplate({title: ''});
         branchesList.append(branchFields);
 
-        const deleteButton = branchFields.firstElementChild;
         const gotoButton = branchFields.lastElementChild;
 
-        deleteButton.addEventListener('click', async () => {
-            const branchId = branchFields.getAttribute('data-branch-id');
-            if (branchId !== null) {
-                if (await app.modal.confirm('Точно удаляем ветку?', 'Будут удалены все задания в ней!'))
-                    app.apiDelete('/branch', {id: branchId});
-                else
-                    return;
-            }
-            branchFields.remove();
-            fastRoll(branchesList);
-        });
         gotoButton.addEventListener('click', async () => {
             const branchId = branchFields.getAttribute('data-branch-id');
-            await app.goto(`/branch-edit?branchId=${branchId}`);
+            await app.goto(`/branch-edit?branchId=${branchId}&questId=${questId}&questName=${titleInput.value}`);
         });
         openRoll(branchesList);
     });
@@ -247,6 +226,7 @@ export async function handler(element, app) {
             const id = el.getAttribute('data-branch-id');
             const title = el.querySelector('input').value.trim()
             const gotoButton = el.lastElementChild;
+            const deleteButton = el.firstElementChild;
 
             let response, resp;
             if (id !== null) {
@@ -258,6 +238,7 @@ export async function handler(element, app) {
                 if (response.ok) {
                     el.setAttribute('data-branch-id', resp['id']);
                     gotoButton.classList.remove('closed');
+                    deleteButton.classList.add('closed');
                 }
             }
 
@@ -285,11 +266,19 @@ export async function handler(element, app) {
                     el.setAttribute('data-permission-id', resp['id']);
             }
 
-            if (!response.ok) {
-                setTimedClass([el], "error");
-                app.messages.error(`Ошибка ${response.status}!`, resp.info);
-            } else {
-                setTimedClass([el], "success");
+            switch (response.status) {
+                case 200:
+                    setTimedClass([el], "success");
+                    break;
+                case 404:
+                    setTimedClass([el], "error");
+                    break;
+                case 409:
+                    setTimedClass([el], "error");
+                    break;
+                default:
+                    app.messages.error(`Ошибка ${response.status}!`, resp.info);
+                    break;
             }
         });
 

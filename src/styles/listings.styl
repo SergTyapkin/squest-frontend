@@ -137,12 +137,12 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
             justify-content center
             .arrow.right
                 margin-left 5px
-        > .button:last-child
+        > div:last-child
             width 18%
             margin-left 20px
-        > .button:first-child
+        > div:not(last-child)
             margin-right 20px
-        > .button.closed
+        > div.closed
             opacity 0
             width 0
             padding-left 0
@@ -150,3 +150,20 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
             margin-left 0
             margin-right 0
             pointer-events none
+        > .orderid
+            display flex
+            align-items center
+            margin-right 5px
+        > .move-buttons
+            > .button
+                padding 0 15px
+    > li:first-child
+        > .move-buttons
+            > .button:first-child
+                opacity 0.2
+                pointer-events none
+    > li:last-child
+        > .move-buttons
+            > .button:last-child
+                opacity 0.2
+                pointer-events none

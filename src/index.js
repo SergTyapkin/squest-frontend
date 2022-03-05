@@ -9,6 +9,8 @@ import './styles/pages.styl';
 import './styles/show-hide.styl';
 import './styles/switches.styl';
 import './styles/elements.styl';
+import './styles/markdown-redactor.styl';
+import './styles/scrollbars.styl';
 
 import { registerSW } from './modules/sw-installer.js';
 import App from './app';
@@ -38,6 +40,7 @@ const baseContentHTML = `
 async function main() {
     document.head.innerHTML += headContentHTML;
     document.body.innerHTML = baseContentHTML + document.body.innerHTML;
+    document.body.classList.add('scrollable');
 
     // await registerSW();
 

@@ -62,9 +62,14 @@ const html = `
 
 const branchTemplate = Handlebars.compile(`
 <!--li-->
-    <div class="button rounded {{#if exists}}closed{{/if}}"><span class="cross"></span></div>
+    <span class="text-big-x orderid">{{ orderid }}</span>
+    <div class="button rounded {{#if exists}}closed{{/if}} delete-button"><span class="cross"></span></div>
+    <div class="{{#unless exists}}closed{{/unless}} move-buttons">
+        <div class="button half-height rounded">˄</div>
+        <div class="button half-height rounded">˅</div>
+    </div>
     <input type="text" placeholder="Название ветки" value="{{ title }}">
-    <div class="text-middle button rounded {{#unless exists}}closed{{/unless}}">
+    <div class="text-middle button rounded {{#unless exists}}closed{{/unless}} goto-button">
         <span class="mobile-hide">Перейти</span> <span class="arrow right"></span>
     </div>
 <!--/li-->`);
@@ -127,11 +132,36 @@ export async function handler(element, app) {
         branchFields.setAttribute('data-branch-id', branch.id);
         branchesList.append(branchFields);
 
-        const gotoButton = branchFields.lastElementChild;
+        const gotoButton = branchFields.querySelector('.goto-button');
+        const moveButtons = branchFields.querySelector('.move-buttons');
+        const orderid = branchFields.querySelector('.orderid');
+        const toTopButton = moveButtons.firstElementChild;
+        const toBottomButton = moveButtons.lastElementChild;
 
         gotoButton.addEventListener('click', async () => {
             const branchId = branchFields.getAttribute('data-branch-id');
             await app.goto(`/branch-edit?branchId=${branchId}&questId=${questId}&questName=${titleInput.value}`);
+        });
+
+        toTopButton.addEventListener('click', () => {
+            const prevEl = branchFields.previousElementSibling;
+            if (!prevEl)
+                return;
+            const curOrderid = orderid.innerText;
+            const prevOrderidEl = prevEl.querySelector('.orderid');
+            orderid.innerText = prevOrderidEl.innerText;
+            prevOrderidEl.innerText = curOrderid;
+            branchesList.insertBefore(branchFields, branchFields.previousSibling);
+        });
+        toBottomButton.addEventListener('click', () => {
+            const nextEl = branchFields.nextElementSibling;
+            if (!nextEl?.getAttribute('data-branch-id'))
+                return;
+            const curOrderid = orderid.innerText;
+            const nextOrderidEl = nextEl.querySelector('.orderid');
+            orderid.innerText = nextOrderidEl.innerText;
+            nextOrderidEl.innerText = curOrderid;
+            branchesList.insertBefore(branchFields.nextSibling, branchFields);
         });
     });
     openRoll(branchesList);
@@ -164,15 +194,49 @@ export async function handler(element, app) {
 
     // click on "new branch"
     newBranchButton.addEventListener("click", () => {
+        const lastOrderid = Number(branchesList.lastElementChild.querySelector('.orderid').innerText);
+
         const branchFields = document.createElement('li');
-        branchFields.innerHTML = branchTemplate({title: ''});
+        branchFields.innerHTML = branchTemplate({title: '', orderid: lastOrderid + 1});
         branchesList.append(branchFields);
 
-        const gotoButton = branchFields.lastElementChild;
+        const gotoButton = branchFields.querySelector('.goto-button');
+        const deleteButton = branchFields.querySelector('.delete-button');
+        const moveButtons = branchFields.querySelector('.move-buttons');
+        const orderid = branchFields.querySelector('.orderid');
+        const toTopButton = moveButtons.firstElementChild;
+        const toBottomButton = moveButtons.lastElementChild;
 
         gotoButton.addEventListener('click', async () => {
             const branchId = branchFields.getAttribute('data-branch-id');
             await app.goto(`/branch-edit?branchId=${branchId}&questId=${questId}&questName=${titleInput.value}`);
+        });
+        deleteButton.addEventListener('click', async () => {
+            const branchId = branchFields.getAttribute('data-permission-id');
+            if (branchId == null) {
+                branchFields.remove();
+                fastRoll(branchesList);
+            }
+        });
+        toTopButton.addEventListener('click', () => {
+            const prevEl = branchFields.previousElementSibling;
+            if (!prevEl)
+                return;
+            const curOrderid = orderid.innerText;
+            const prevOrderidEl = prevEl.querySelector('.orderid');
+            orderid.innerText = prevOrderidEl.innerText;
+            prevOrderidEl.innerText = curOrderid;
+            branchesList.insertBefore(branchFields, branchFields.previousSibling);
+        });
+        toBottomButton.addEventListener('click', () => {
+            const nextEl = branchFields.nextElementSibling;
+            if (!nextEl?.getAttribute('data-branch-id'))
+                return;
+            const curOrderid = orderid.innerText;
+            const nextOrderidEl = nextEl.querySelector('.orderid');
+            orderid.innerText = nextOrderidEl.innerText;
+            nextOrderidEl.innerText = curOrderid;
+            branchesList.insertBefore(branchFields.nextSibling, branchFields);
         });
         openRoll(branchesList);
     });
@@ -224,13 +288,15 @@ export async function handler(element, app) {
 
         forEachChild(branchesList, async (el) => {
             const id = el.getAttribute('data-branch-id');
+            const orderId = el.querySelector('.orderid').innerText;
             const title = el.querySelector('input').value.trim()
-            const gotoButton = el.lastElementChild;
-            const deleteButton = el.firstElementChild;
+            const gotoButton = el.querySelector('.goto-button');
+            const deleteButton = el.querySelector('.delete-button');
+            const moveButtons = el.querySelector('.move-buttons');
 
             let response, resp;
             if (id !== null) {
-                response = await app.apiPut('/branch', {id, title});
+                response = await app.apiPut('/branch', {id, title, orderId});
                 resp = await response.json();
             } else {
                 response = await app.apiPost('/branch', {questId, title, description: ""});
@@ -239,6 +305,7 @@ export async function handler(element, app) {
                     el.setAttribute('data-branch-id', resp['id']);
                     gotoButton.classList.remove('closed');
                     deleteButton.classList.add('closed');
+                    moveButtons.classList.remove('closed');
                 }
             }
 

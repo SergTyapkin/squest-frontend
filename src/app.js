@@ -17,6 +17,7 @@ import * as questCreate from './views/questCreate.html.js';
 import * as questEdit from './views/questEdit.html.js';
 import * as myQuests from './views/myQuests.html.js';
 import * as branchEdit from './views/branchEdit.html.js';
+import * as taskEdit from './views/taskEdit.html.js';
 
 const DEFAULT_AVATAR_URL = '/images/default_avatar.png';
 const DEFAULT_BACKGROUND = undefined; //'linear-gradient(30deg, #110612 5%, #153131 15%, #2e143c 60%, #5d4e25 100%)';
@@ -105,6 +106,12 @@ export default class App {
                 urlRegex: /^\/branch-edit\?.*$/,
                 title: `${this.name} | Изменить ветку`,
                 handler: branchEdit.handler,
+                authRequired: true
+            },
+            {
+                urlRegex: /^\/task-edit\?.*$/,
+                title: `${this.name} | Изменить задание`,
+                handler: taskEdit.handler,
                 authRequired: true
             },
             {

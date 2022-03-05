@@ -38,9 +38,7 @@ const html = `
         <div id="published-fields">
             <label class="text-big">Опубликована <span id="published-error"></span></label>
             <input id="published-input" type="checkbox" class="switch">
-            <div class="info text-small">
-                Если ветка не опубликована - это черновик. Она не будет показываться остальным в списке веток квеста
-            </div>
+            <div class="info text-small">Если ветка не опубликована - это черновик. Она не будет показываться остальным в списке веток квеста</div>
         </div>
     </div>
 
@@ -57,9 +55,14 @@ const html = `
 
 const taskTemplate = Handlebars.compile(`
 <!--li-->
-    <div class="button rounded"><span class="cross"></span></div>
+    <span class="text-big-x orderid">{{ orderid }}</span>
+    <div class="{{#unless exists}}closed{{/unless}} move-buttons">
+        <div class="button half-height rounded">˄</div>
+        <div class="button half-height rounded">˅</div>
+    </div>
+    <div class="button rounded delete-button"><span class="cross"></span></div>
     <input type="text" placeholder="Название задания" value="{{ title }}">
-    <div class="text-middle button rounded {{#unless exists}}closed{{/unless}}">
+    <div class="text-middle button rounded {{#unless exists}}closed{{/unless}} goto-button">
         <span class="mobile-hide">Перейти</span> <span class="arrow right"></span>
     </div>
 <!--/li-->`);
@@ -119,8 +122,12 @@ export async function handler(element, app) {
         taskFields.setAttribute('data-task-id', task.id);
         tasksList.append(taskFields);
 
-        const deleteButton = taskFields.firstElementChild;
-        const gotoButton = taskFields.lastElementChild;
+        const deleteButton = taskFields.querySelector('.delete-button');
+        const gotoButton = taskFields.querySelector('.goto-button');
+        const moveButtons = taskFields.querySelector('.move-buttons');
+        const orderid = taskFields.querySelector('.orderid');
+        const toTopButton = moveButtons.firstElementChild;
+        const toBottomButton = moveButtons.lastElementChild;
 
         deleteButton.addEventListener('click', async () => {
             const taskId = taskFields.getAttribute('data-task-id');
@@ -132,7 +139,28 @@ export async function handler(element, app) {
         });
         gotoButton.addEventListener('click', async () => {
             const taskId = taskFields.getAttribute('data-task-id');
-            await app.goto(`/task-edit?taskId=${taskId}&branchId=${branchId}&branchName=${titleInput.value}`);
+            await app.goto(`/task-edit?taskId=${taskId}&branchId=${branchId}&branchName=${titleInput.value}&questId=${questId}&questName=${questName}`);
+        });
+
+        toTopButton.addEventListener('click', () => {
+            const prevEl = taskFields.previousElementSibling;
+            if (!prevEl)
+                return;
+            const curOrderid = orderid.innerText;
+            const prevOrderidEl = prevEl.querySelector('.orderid');
+            orderid.innerText = prevOrderidEl.innerText;
+            prevOrderidEl.innerText = curOrderid;
+            tasksList.insertBefore(taskFields, taskFields.previousSibling);
+        });
+        toBottomButton.addEventListener('click', () => {
+            const nextEl = taskFields.nextElementSibling;
+            if (!nextEl?.getAttribute('data-task-id'))
+                return;
+            const curOrderid = orderid.innerText;
+            const nextOrderidEl = nextEl.querySelector('.orderid');
+            orderid.innerText = nextOrderidEl.innerText;
+            nextOrderidEl.innerText = curOrderid;
+            tasksList.insertBefore(taskFields.nextSibling, taskFields);
         });
     });
     openRoll(tasksList);
@@ -140,12 +168,18 @@ export async function handler(element, app) {
 
     // click on "new task"
     newTaskButton.addEventListener("click", () => {
+        const lastOrderid = Number(tasksList.lastElementChild.querySelector('.orderid').innerText);
+
         const taskFields = document.createElement('li');
-        taskFields.innerHTML = taskTemplate({title: ''});
+        taskFields.innerHTML = taskTemplate({title: '', orderid: lastOrderid + 1});
         tasksList.append(taskFields);
 
-        const deleteButton = taskFields.firstElementChild;
-        const gotoButton = taskFields.lastElementChild;
+        const deleteButton = taskFields.querySelector('.delete-button');
+        const gotoButton = taskFields.querySelector('.goto-button');
+        const moveButtons = taskFields.querySelector('.move-buttons');
+        const orderid = taskFields.querySelector('.orderid');
+        const toTopButton = moveButtons.firstElementChild;
+        const toBottomButton = moveButtons.lastElementChild;
 
         deleteButton.addEventListener('click', async () => {
             const taskId = taskFields.getAttribute('data-task-id');
@@ -161,6 +195,27 @@ export async function handler(element, app) {
         gotoButton.addEventListener('click', async () => {
             const taskId = taskFields.getAttribute('data-task-id');
             await app.goto(`/task-edit?taskId=${taskId}&branchId=${branchId}&branchName=${titleInput.value}`);
+        });
+
+        toTopButton.addEventListener('click', () => {
+            const prevEl = taskFields.previousElementSibling;
+            if (!prevEl)
+                return;
+            const curOrderid = orderid.innerText;
+            const prevOrderidEl = prevEl.querySelector('.orderid');
+            orderid.innerText = prevOrderidEl.innerText;
+            prevOrderidEl.innerText = curOrderid;
+            tasksList.insertBefore(taskFields, taskFields.previousSibling);
+        });
+        toBottomButton.addEventListener('click', () => {
+            const nextEl = taskFields.nextElementSibling;
+            if (!nextEl?.getAttribute('data-task-id'))
+                return;
+            const curOrderid = orderid.innerText;
+            const nextOrderidEl = nextEl.querySelector('.orderid');
+            orderid.innerText = nextOrderidEl.innerText;
+            nextOrderidEl.innerText = curOrderid;
+            tasksList.insertBefore(taskFields.nextSibling, taskFields);
         });
         openRoll(tasksList);
     });
@@ -190,12 +245,14 @@ export async function handler(element, app) {
 
         forEachChild(tasksList, async (el) => {
             const id = el.getAttribute('data-task-id');
+            const orderId = el.querySelector('.orderid').innerText;
             const title = el.querySelector('input').value.trim()
-            const gotoButton = el.lastElementChild;
+            const gotoButton = el.querySelector('.goto-button')
+            const moveButtons = el.querySelector('.move-buttons');
 
             let response, resp;
             if (id !== null) {
-                response = await app.apiPut('/task', {id, title});
+                response = await app.apiPut('/task', {id, title, orderId});
                 resp = await response.json();
             } else {
                 response = await app.apiPost('/task', {branchId, title, description: "", question: "", answers: []});
@@ -203,6 +260,7 @@ export async function handler(element, app) {
                 if (response.ok) {
                     el.setAttribute('data-task-id', resp['id']);
                     gotoButton.classList.remove('closed');
+                    moveButtons.classList.remove('closed');
                 }
             }
 

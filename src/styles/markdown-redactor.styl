@@ -1,0 +1,124 @@
+@require 'constants.styl'
+
+extra-small = 3px
+small-font-size = 14px
+
+svg-buttons-fill-color = textColor1
+svg-stroke-width = 1px
+
+// Markdowns
+markdown-panel-shadow-offset = 2px
+markdown-panel-shadow-color = colorShadow
+markdown-panel-margin = 2px
+markdown-panel-border-radius = extra-small 0 extra-small 0
+markdown-panel-font-size = small-font-size
+markdown-panel-height = 20px
+markdown-panel-bg-color = bgColor2
+
+markdown-button-width = 30px
+markdown-button-padding = 2px 0 0 0
+markdown-button-divider-color = bgColor1
+markdown-button-bg-color = transparent
+markdown-button-bg-color-hover = empColor1
+
+markdown-button-svg-photo-stroke = 2px
+markdown-button-svg-photo-fill = transparent
+
+
+
+#markdown-panel
+    top 0
+    left 0
+    display flex
+    overflow hidden
+    box-shadow 0 markdown-panel-shadow-offset markdown-panel-shadow-offset markdown-panel-shadow-color
+    margin markdown-panel-margin
+    border-radius markdown-panel-border-radius
+    font-family Arial
+    font-size markdown-panel-font-size
+    height markdown-panel-height
+    background markdown-panel-bg-color
+    svg
+        fill svg-buttons-fill-color
+        overflow visible
+
+    > div
+        cursor pointer
+        text-align center
+        margin auto 0 auto 0
+        width markdown-button-width
+        height 100%
+        padding markdown-button-padding
+        background markdown-button-bg-color
+
+        transition background ease 0.2s
+        background-image:
+                radial-gradient(1px 45% at 0% 50%, markdown-button-divider-color, transparent),
+                radial-gradient(1px 45% at 100% 50%, markdown-button-divider-color, transparent);
+        ._photo
+            stroke svg-buttons-fill-color
+            stroke-width svg-stroke-width
+            fill markdown-button-svg-photo-fill
+    > div._italic
+        font-family Cursive
+        padding-top 0
+    > div:hover
+        background markdown-button-bg-color-hover
+
+    > div._bold
+        font-weight bold
+    > div._italic
+        font-style italic
+    > div._underscore
+        text-decoration underline
+    > div._strikethrough
+        text-decoration line-through
+
+
+// Decoration for html tags inside messages
+code-decoration-background = bgColor2
+code-decoration-border-radius = 2px
+blockquote-decoration-color = bgColor2
+blockquote-decoration-width = 2px
+blockquote-decoration-margin = 5px 0
+blockquote-decoration-padding = 0 0 0 10px
+blockquote-decoration-offset = 25px
+list-decoration-margin = 5px 0
+list-decoration-offset = 40px
+list-decoration-color = bgColor2
+link-decoration-color = secColor1
+link-decoration-color-visited = color5-A
+p-decoration-margin = 3px 0
+img-decoration-margin = 0
+hr-color = linear-gradient(90deg, transparent, empColor1, transparent)
+
+hr
+    height 2px
+    border none
+    background hr-color
+code
+    font-family monospace
+    background code-decoration-background
+    border-radius code-decoration-border-radius
+blockquote
+    border-left blockquote-decoration-width blockquote-decoration-color solid
+    margin blockquote-decoration-margin
+    padding blockquote-decoration-padding
+    margin-inline-start blockquote-decoration-offset
+ul
+    list-style-type disc
+    margin list-decoration-margin
+    padding-inline-start list-decoration-offset
+    li::marker
+        color list-decoration-color
+a
+link
+    color link-decoration-color
+a:visited
+link:visited
+    color link-decoration-color-visited
+p
+    margin p-decoration-margin
+img
+    max-width 100%
+    margin img-decoration-margin

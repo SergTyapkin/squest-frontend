@@ -1,0 +1,26 @@
+@require 'constants.styl'
+
+scroll-bg-color = bgColor2
+scroll-thumb-color = empColor1
+scroll-thumb-color-hover = empColor2
+scrollbar-width-worded = thin
+scrollbar-width = 6px
+scrollbar-border = 1px
+
+.scrollable
+  overflow-y auto
+  scrollbar-width scrollbar-width-worded
+  scrollbar-color scroll-thumb-color scroll-bg-color
+.scrollable:hover
+  scrollbar-color scroll-thumb-color-hover scroll-bg-color
+.scrollable:hover::-webkit-scrollbar-thumb
+  background-color scroll-thumb-color-hover
+.scrollable::-webkit-scrollbar
+  width scrollbar-width
+.scrollable::-webkit-scrollbar-track
+  background scroll-bg-color
+  border-radius (scrollbar-width / 2)
+.scrollable::-webkit-scrollbar-thumb
+  background-color scroll-thumb-color
+  border-radius (scrollbar-width / 2)
+  border scrollbar-border solid scroll-bg-color

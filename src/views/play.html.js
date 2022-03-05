@@ -1,5 +1,6 @@
 import {$, setTimedClass} from "../modules/utils.ts";
 import {hide, show} from "../modules/show-hide.js";
+import {marked} from "marked/marked.min.js"
 
 const html = `
 <div id="back-button" class="title-container bg">
@@ -10,7 +11,7 @@ const html = `
     </div>
 </div>
 
-<div id="task-description" class="text-big"></div>
+<div id="task-description" class="text"></div>
 
 <form id="form-answer" class="form centered-horizontal">
     <div class="info-container">
@@ -67,10 +68,10 @@ export async function handler(element, app) {
             progressbar.style.setProperty('--progress', res.progress / (res.length - 1));
 
             taskTitle.innerHTML = res.title;
-            taskDescription.innerHTML = res.description;
+            taskDescription.innerHTML = marked.parse(res.description, {breaks: true, sanitize: true});
             taskQuestion.innerHTML = res.question;
 
-            if (!res.question) {
+            if (res.question === undefined) {
                 hide(form);
                 show(finishButton);
             }

@@ -1,39 +1,46 @@
 import { $ } from "../modules/utils.ts";
+import Handlebars from 'handlebars/dist/cjs/handlebars.js';
 
 const html = `
-<div><linkButton href="/me" class="fullwidth left-item text-big listing-item ptb20" style="margin-top: 50px; position: relative; display: block; background: linear-gradient(160deg, rgba(188,116,39, 0.3) 0%, rgba(31,26,9,0.2) 100%) 50% 50% no-repeat">
-    <span class="title choose" style="margin: 0 30px; opacity: 100%"><span class="arrow left" style="display: inline-block"></span>Назад</span>
-</linkButton></div>
-<div id="choose-quest" style="transition: all 1s ease; left: 0%; width: 100%">
-    <div class="left-item bg-left" style="padding: 20px; margin-top: 30px">
-        <div class="title">Рейтинг</div>
+<div id="choose-quest-block">
+    <div id="back-button" class="title-container clickable low-opacity">
+        <linkButton href="/me">
+            <arrow class="arrow left"></arrow>
+            <span class="text-big-x lighting-text">В профиль</span>
+        </linkButton>
     </div>
-    <div id="users-listing" style="overflow-x: hidden">
-    </div>
+    
+    <ul id="quests-listing" class="listing">
+        <!--Quests will be there-->
+    </ul>
 </div>
 
-<div style="position: relative; text-align: center; margin: 30px">
-    <linkButton class="submit p10" href="/about" style="border-radius: 10px; background: linear-gradient(90deg, rgba(71, 56, 20, 0.4) 0%, rgba(84,69,25,0.7) 100%) 50% 50% no-repeat">На главную</linkButton>
+<div class="float-button text-middle">
+    <div class="hover-text">Трахнуть кого-нибудь</div>
+    <svg pointer-events="none" xmlns="http://www.w3.org/2000/svg"><path transform="scale(2.2) translate(-1,-1)" d="M10 3.25c.41 0 .75.34.75.75v5.25H16a.75.75 0 010 1.5h-5.25V16a.75.75 0 01-1.5 0v-5.25H4a.75.75 0 010-1.5h5.25V4c0-.41.34-.75.75-.75z"></path></svg>
 </div>
 `;
 
-export function handler(element, app) {
-    document.title = "SQuest | Рейтинг";
+
+const userTemplate = Handlebars.compile(`
+<li data-user-id="{{ id }}" class="text-big">
+    {{ name }}
+    <span class="text info">{{ rating }}</span>
+    <span class="text choose">Профиль<arrow class="arrow right"></arrow></span>
+</li>
+`)
+
+
+export async function handler(element, app) {
     element.innerHTML = html;
 
-    ajax('GET', '/api/rating', null, (status, response) => {
-        const listing = document.getElementById("users-listing");
-        response.users.forEach((user) => {
-            let addText = '';
-            if (user.isFoundBonus)
-                addText = '+';
+    const listing = $("quests-listing");
 
-            listing.innerHTML += `<div class="fullwidth left-item text-big listing-item p20" style="display: block">
-                                      <span style="width: 50px">${user.nickname}</span>
-                                      <span class="title choose" style="margin: 0 30px"><arrow class="arrow right" style="margin-left: 10px; display: inline-block;"></arrow>
-                                          ${user.rating} ${addText}
-                                      </span>
-                                  </div>`;
-        });
+    const response = await app.apiGet("/rating")
+    const res = await response.json()
+
+    listing.innerHTML = "";
+    res.forEach(user => {
+        listing.innerHTML += userTemplate(user);
     });
 }

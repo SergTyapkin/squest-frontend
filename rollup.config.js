@@ -28,7 +28,7 @@ export default {
         commonjs(),
         terser({ format: { comments: false } }),
         html({
-            title: 'Landing',
+            title: 'SQuest',
             attributes: {
                 html: { lang: 'ru' }
             },

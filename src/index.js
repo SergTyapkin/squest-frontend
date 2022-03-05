@@ -16,7 +16,7 @@ import { registerSW } from './modules/sw-installer.js';
 import App from './app';
 
 // const API_BASE_URL = 'https://your-site/api';
-const API_BASE_URL = 'http://127.0.0.1:9000/api';
+const API_BASE_URL = 'http://squest-api.herokuapp.com/api';
 const APP_TITLE = 'SQuest';
 
 const headContentHTML = '<link rel="icon" href="/images/favicon.ico" type="image/x-icon">';

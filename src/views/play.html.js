@@ -11,7 +11,7 @@ const html = `
     </div>
 </div>
 
-<div id="task-description" class="text"></div>
+<div id="task-description" class="text flex-filler"></div>
 
 <form id="form-answer" class="form centered-horizontal">
     <div class="info-container">
@@ -21,7 +21,8 @@ const html = `
     <div class="fields-container">
         <div id="form-answer-fields">
             <div class="info" id="answer-error"></div>
-            <input id="answer-input" type="text" placeholder="Ответ (регистр не важен)">
+            <input id="answer-input" type="text" placeholder="Ответ" autocomplete="off">
+            <div class="info text-small">Регистр не важен</div>
         </div>
     </div>
     
@@ -30,7 +31,23 @@ const html = `
     </div>
 </form>
 
-<linkButton id="finish-button" class="text-big-x button outline hidden" href="/quests" >Завершить квест</linkButton>
+<div id="end-buttons" class="centered-horizontal text-max fullwidth hidden">
+    Вы прошли ветку!
+    <div class="title-container clickable">
+        <div id="restart-button">
+            <div>
+                <div class="text-big-x">Начать заново</div>
+                <div class="text">Прогресс сохранится</div>
+            </div>
+        </div>
+        <linkButton href="/quests">
+            <div>
+                <div class="text-big-x">Завершить квест</div>
+            </div>
+        </linkButton>
+    </div>
+</div>
+
 
 <footer class="underbar-contacts" id="underbar-contacts">
     <li>
@@ -55,7 +72,8 @@ export async function handler(element, app) {
     const taskQuestion = $("task-question");
 
     const answerInput = $("answer-input");
-    const finishButton = $("finish-button");
+    const endButtons = $("end-buttons");
+    const restartButton = $("restart-button");
 
     let response = await app.apiGet("/task/play");
     let res = await response.json();
@@ -73,9 +91,12 @@ export async function handler(element, app) {
 
             if (res.question === undefined) {
                 hide(form);
-                show(finishButton);
+                show(endButtons);
             }
             break;
+        case 400:
+            app.goto('/quests');
+            return;
         default:
             app.messages.error(`Ошибка ${response.status}!`, res.info);
             break;
@@ -91,7 +112,7 @@ export async function handler(element, app) {
 
         switch (response.status) {
             case 200:
-                await app.goto("/play");
+                app.goto("/play");
                 break;
             case 418:
                 setTimedClass([formAnswerFields], "error");
@@ -99,6 +120,13 @@ export async function handler(element, app) {
             default:
                 app.messages.error(`Ошибка ${response.status}!`, res.info);
                 break;
+        }
+    });
+
+    restartButton.addEventListener('click', async () => {
+        if (await app.modal.confirm("Точно начинаем заново?", "Рейтинг останется")) {
+            await app.apiPut('/branch/progress/reset', {branchId: app.storage.branchId});
+            app.goto('/play');
         }
     });
 }

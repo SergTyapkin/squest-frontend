@@ -55,7 +55,7 @@
 
   #choose-quest-block,
   #details-block
-    transition all 1s ease
+    transition all 0.8s ease
     position absolute
     width 100%
   #choose-quest-block
@@ -82,8 +82,10 @@
   color textColor2
 #form-answer
   margin-top 10px
-#finish-button
-  flex 0 !important
+#restart-button
+  > *
+    text-align left
+
 
 // [QUESTS, BRANCHES, TASKS] EDIT AND CREATE
 #data-edit-form
@@ -96,3 +98,11 @@
   position relative
   width 100%
   padding-top 30px
+
+// RATINGS
+.rating-page
+  .title-container
+    margin-bottom 0
+  .listing
+    > li
+      padding-left 20px

@@ -2,7 +2,7 @@ import { $ } from "../modules/utils.ts";
 import Handlebars from 'handlebars/dist/cjs/handlebars.js';
 
 const html = `
-<div id="choose-quest-block">
+<div class="rating-page">
     <div id="back-button" class="title-container clickable low-opacity">
         <linkButton href="/me">
             <arrow class="arrow left"></arrow>
@@ -10,8 +10,8 @@ const html = `
         </linkButton>
     </div>
     
-    <ul id="quests-listing" class="listing">
-        <!--Quests will be there-->
+    <ul id="rating-listing" class="listing">
+        <!--Users will be there-->
     </ul>
 </div>
 
@@ -34,7 +34,7 @@ const userTemplate = Handlebars.compile(`
 export async function handler(element, app) {
     element.innerHTML = html;
 
-    const listing = $("quests-listing");
+    const listing = $("rating-listing");
 
     const response = await app.apiGet("/rating")
     const res = await response.json()

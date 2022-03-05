@@ -30,10 +30,12 @@ const html = `
                 <div class="text-max" id="details-branch-title"></div>
             </div>
             <div class="text-big-x">О квесте:
-                <div class="text">Тут всякая инфа будет</div>
+                <div class="text-middle">
+                    Вы прошли <span id="details-progress"></span> из <span id="details-length"></span>                
+                </div>
             </div>
         </div>
-        <linkButton id="confirm-button" class="text-big-x button outline centered" href="/play">Начать ветку</linkButton>
+        <linkButton id="confirm-button" class="text-big-x button rounded outline centered" href="/play">Играть</linkButton>
     </div>
     
     <linkButton class="float-button text-middle" href="/quest-create">
@@ -69,6 +71,8 @@ export async function handler(element, app) {
     const detailsBlock = $("details-block");
     const detailsQuestTitle = $("details-quest-title");
     const detailsBranchTitle = $("details-branch-title");
+    const detailsProgress = $("details-progress");
+    const detailsLength = $("details-length");
 
 
     const response = await app.apiGet("/quest")
@@ -111,7 +115,7 @@ export async function handler(element, app) {
             openRoll(branchesBlock);
 
             branchesBlock.querySelectorAll("*[data-branch-button]").forEach((branchButton) => {
-                branchButton.addEventListener("click", (event) => {
+                branchButton.addEventListener("click", async (event) => {
                     event.stopPropagation();
 
                     const branchId = branchButton.getAttribute("data-branch-id");
@@ -128,6 +132,12 @@ export async function handler(element, app) {
                     detailsBranchTitle.innerText = branchTitle;
                     app.storage.questTitle = questTitle;
                     app.storage.branchTitle = branchTitle;
+
+                    const response = await app.apiGet(`/branch?branchId=${branchId}`)
+                    const res = await response.json()
+
+                    detailsProgress.innerText = res.progress;
+                    detailsLength.innerText = res.length;
                 });
             });
         });

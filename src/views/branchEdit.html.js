@@ -30,6 +30,7 @@ const html = `
         </div>
         <div id="tasks-fields">
             <label class="text-big">Задания <span id="tasks-error"></span></label>
+            <div class="info text-small">Последнее задание в ветке выводится игроку без вопроса - это страница с поздравлением </div>
             <ul id="tasks-list" class="addable-list roll-closed">
                 <!-- tasks will be there -->
             </ul>
@@ -72,8 +73,6 @@ export async function handler(element, app) {
     element.innerHTML = html;
     const searchParams = new URL(window.location.href).searchParams;
     const branchId = searchParams.get('branchId');
-    const questId = searchParams.get('questId');
-    const questName = searchParams.get('questName');
 
     const form = $("data-edit-form");
     const titleFields = $("title-fields");
@@ -88,21 +87,15 @@ export async function handler(element, app) {
     const titleError = $("title-error");
     const descriptionError = $("description-error");
 
+    const backButton = $("back-button");
     const tasksList = $("tasks-list");
     const newTaskButton = $("tasks-button-new");
     const saveButton = $("save-button");
     const deleteButton = $("delete-button");
     const questTitleEl = $("quest-name");
 
-    questTitleEl.innerText = '\"' + questName + '\"';
-    const backButton = $("back-button");
-    backButton.addEventListener('click', async () => {
-        await app.goto(`/quest-edit?questId=${questId}`);
-    });
-
     form.oninput = () => window.onbeforeunload = () => true;
     app.actions.ongoto = () => window.onbeforeunload = () => null;
-
 
     let response = await app.apiGet(`/branch?branchId=${branchId}`);
     let res = await response.json();
@@ -110,6 +103,10 @@ export async function handler(element, app) {
     titleInput.value = res.title;
     descriptionInput.value = res.description;
     publishedInput.checked = res.ispublished;
+    questTitleEl.innerText = '\"' + res.qtitle + '\"';
+    backButton.addEventListener('click', async () => {
+        app.goto(`/quest-edit?questId=${res.questid}`);
+    });
 
     // --- get existing tasks
     response = await app.apiGet(`/task?branchId=${branchId}`);
@@ -139,7 +136,7 @@ export async function handler(element, app) {
         });
         gotoButton.addEventListener('click', async () => {
             const taskId = taskFields.getAttribute('data-task-id');
-            await app.goto(`/task-edit?taskId=${taskId}&branchId=${branchId}&branchName=${titleInput.value}&questId=${questId}&questName=${questName}`);
+            app.goto(`/task-edit?taskId=${taskId}`);
         });
 
         toTopButton.addEventListener('click', () => {
@@ -194,7 +191,7 @@ export async function handler(element, app) {
         });
         gotoButton.addEventListener('click', async () => {
             const taskId = taskFields.getAttribute('data-task-id');
-            await app.goto(`/task-edit?taskId=${taskId}&branchId=${branchId}&branchName=${titleInput.value}`);
+            app.goto(`/task-edit?taskId=${taskId}`);
         });
 
         toTopButton.addEventListener('click', () => {

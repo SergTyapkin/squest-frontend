@@ -135,7 +135,7 @@ export default class App {
         ];
 
         window.addEventListener('popstate', async () => {
-            await this.goto(location.pathname, false);
+            await this.goto(location.pathname + location.search, false);
         });
 
         document.body.addEventListener('click', this.__bodyClick.bind(this));

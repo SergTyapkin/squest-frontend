@@ -11,7 +11,6 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
 .title-container
     margin 50px 0 20px 0
     width 100%
-    flex 0 !important
     display flex
     align-content stretch
     justify-content center
@@ -21,10 +20,13 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
         padding 20px
         box-shadow 0 0 10px 0 rgba(162, 116, 14, 0.8), 0 0 15px 0 rgba(34, 28, 4, 0.5) inset
         transition all 0.3s ease
-        white-space nowrap
         text-shadow textLightingNormal2
         color textColor1
-        > *
+        > .text,
+        > .text-big,
+        > .text-big-x,
+        > .text-middle,
+        > .text-small
             transition inherit
             transition-delay 20ms
 
@@ -76,7 +78,6 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
         box-shadow 0 0 10px 0 rgba(162, 116, 14, 200), 0 0 15px 0 rgb(34, 28, 4, 125) inset
         transition all 0.3s ease
         cursor pointer
-        white-space nowrap
         .choose
             opacity 0.3
             margin-left 30px

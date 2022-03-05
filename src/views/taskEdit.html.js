@@ -49,6 +49,7 @@ const html = `
         </div>
         <div id="question-fields">
             <label class="text-big">Вопрос <span id="question-error"></span></label>
+            <div class="info text-small">Последнее задание в ветке выводится игроку без вопроса - это страница с поздравлением </div>
             <textarea id="question-input" class="text"></textarea>
         </div>
         <div id="answers-fields">
@@ -71,7 +72,7 @@ const html = `
 const answerTemplate = Handlebars.compile(`
 <!--li-->
     <div class="button rounded"><span class="cross"></span></div>
-    <input type="text" placeholder="Ответ" value="{{ answer }}">
+    <input type="text" placeholder="Ответ" value="{{ answer }}" autocomplete="off" style="text-transform: lowercase">
 <!--/li-->`);
 
 
@@ -79,10 +80,6 @@ export async function handler(element, app) {
     element.innerHTML = html;
     const searchParams = new URL(window.location.href).searchParams;
     const taskId = searchParams.get('taskId');
-    const branchId = searchParams.get('branchId');
-    const branchName = searchParams.get('branchName');
-    const questId = searchParams.get('questName');
-    const questName = searchParams.get('questName');
 
     const form = $("data-edit-form");
     const titleFields = $("title-fields");
@@ -107,10 +104,6 @@ export async function handler(element, app) {
     const saveButton = $("save-button");
     const branchTitleEl = $("branch-name");
 
-    branchTitleEl.innerText = '\"' + branchName + '\"';
-    backButton.addEventListener('click', async () => {
-        await app.goto(`/branch-edit?branchId=${branchId}&questId=${questId}&questName=${questName}`);
-    });
 
     // initialize markdown redactor
     const markdownPanel = $("markdown-panel");
@@ -126,7 +119,10 @@ export async function handler(element, app) {
     descriptionInput.value = res.description;
     descriptionInput.style.height = descriptionInput.scrollHeight + 30 + "px";
     questionInput.value = res.question;
-
+    branchTitleEl.innerText = '\"' + res.btitle + '\"';
+    backButton.addEventListener('click', async () => {
+        app.goto(`/branch-edit?branchId=${res.branchid}`);
+    });
     // create existing answers
     res.answers.forEach((answer) => {
         const answerFields = document.createElement('li');

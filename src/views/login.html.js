@@ -10,11 +10,11 @@ const html = `
     <div class="fields-container">
         <div id="name-fields">
             <label class="text-big">ЛОГИН <span id="name-error"></span></label>
-            <input id="name-input" type="text">
+            <input id="name-input" type="text" autocomplete="on">
         </div>
         <div id="password-fields">
             <label class="text-big">ПАРОЛЬ <span id="password-error"></span></label>
-            <input id="password-input" type="password">
+            <input id="password-input" type="password" autocomplete="on">
             <div class="info text-small"><linkButton href="/about">Забыл пароль?</linkButton> - пей таблетки</div>
         </div>
     </div>
@@ -49,7 +49,7 @@ export function handler(element, app) {
         switch (response.status) {
             case 200:
                 app.setUser(res);
-                await app.goto("/me");
+                app.goto("/me");
                 break;
             case 401:
                 setTimedClass([nameFields, passwordFields], "error");

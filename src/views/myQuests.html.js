@@ -49,7 +49,7 @@ export async function handler(element, app) {
     listing.querySelectorAll("*[data-quest-button]").forEach((button) => {
         button.addEventListener("click", async () => {
             const questId = button.getAttribute("data-quest-id");
-            await app.goto(`/quest-edit?questId=${questId}`)
+            app.goto(`/quest-edit?questId=${questId}`)
         });
     });
 }

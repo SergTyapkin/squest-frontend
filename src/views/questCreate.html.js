@@ -54,13 +54,13 @@ const html = `
 const branchTemplate = Handlebars.compile(`
 <!--li-->
     <div class="button rounded"><span class="cross"></span></div>
-    <input data-branch-id="{{ id }}" type="text" placeholder="Название ветки" value="{{ title }}">
+    <input data-branch-id="{{ id }}" type="text" placeholder="Название ветки" value="{{ title }}" autocomplete="off">
 <!--/li-->`)
 
 const permissionTemplate = Handlebars.compile(`
 <!--li-->
     <div class="button rounded"><span class="cross"></span></div>
-    <input type="text" placeholder="Логин пользователя" value="{{ name }}">
+    <input type="text" placeholder="Логин пользователя" value="{{ name }}" autocomplete="off">
     <div class="text-middle radio">
         <input label="Белый" type="radio" name="{{ uid }}" value="false" checked>
         <input label="Черный" type="radio" name="{{ uid }}" value="true">
@@ -178,6 +178,6 @@ export function handler(element, app) {
         });
 
         if (questId !== undefined)
-            await app.goto(`/quest-edit?questId=${questId}`);
+            app.goto(`/quest-edit?questId=${questId}`);
     });
 }

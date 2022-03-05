@@ -26,6 +26,7 @@ const html = `
         </div>
         <div id="branches-fields">
             <label class="text-big">Ветки <span id="branches-error"></span></label>
+            <div class="info text-small">При просмотре квестов для игры вы будете видеть даже неопубликованные ветки, чтобы можно было поиграть и проверить ветку до её публикации</div>
             <ul id="branches-list" class="addable-list roll-closed">
                 <!-- Branches will be there -->
             </ul>
@@ -68,7 +69,7 @@ const branchTemplate = Handlebars.compile(`
         <div class="button half-height rounded">˄</div>
         <div class="button half-height rounded">˅</div>
     </div>
-    <input type="text" placeholder="Название ветки" value="{{ title }}">
+    <input type="text" placeholder="Название ветки" value="{{ title }}" autocomplete="off">
     <div class="text-middle button rounded {{#unless exists}}closed{{/unless}} goto-button">
         <span class="mobile-hide">Перейти</span> <span class="arrow right"></span>
     </div>
@@ -140,7 +141,7 @@ export async function handler(element, app) {
 
         gotoButton.addEventListener('click', async () => {
             const branchId = branchFields.getAttribute('data-branch-id');
-            await app.goto(`/branch-edit?branchId=${branchId}&questId=${questId}&questName=${titleInput.value}`);
+            app.goto(`/branch-edit?branchId=${branchId}`);
         });
 
         toTopButton.addEventListener('click', () => {
@@ -194,7 +195,9 @@ export async function handler(element, app) {
 
     // click on "new branch"
     newBranchButton.addEventListener("click", () => {
-        const lastOrderid = Number(branchesList.lastElementChild.querySelector('.orderid').innerText);
+        let lastOrderid = 0;
+        if (branchesList.lastElementChild)
+            lastOrderid = Number(branchesList.lastElementChild.querySelector('.orderid').innerText);
 
         const branchFields = document.createElement('li');
         branchFields.innerHTML = branchTemplate({title: '', orderid: lastOrderid + 1});
@@ -209,7 +212,7 @@ export async function handler(element, app) {
 
         gotoButton.addEventListener('click', async () => {
             const branchId = branchFields.getAttribute('data-branch-id');
-            await app.goto(`/branch-edit?branchId=${branchId}&questId=${questId}&questName=${titleInput.value}`);
+            app.goto(`/branch-edit?branchId=${branchId}`);
         });
         deleteButton.addEventListener('click', async () => {
             const branchId = branchFields.getAttribute('data-permission-id');
@@ -286,36 +289,46 @@ export async function handler(element, app) {
                 break;
         }
 
+        const branchesToCreate = [];
+        const branchesToCreateElements = [];
         forEachChild(branchesList, async (el) => {
             const id = el.getAttribute('data-branch-id');
-            const orderId = el.querySelector('.orderid').innerText;
+            const orderId = el.querySelector('.orderid');
             const title = el.querySelector('input').value.trim()
             const gotoButton = el.querySelector('.goto-button');
             const deleteButton = el.querySelector('.delete-button');
             const moveButtons = el.querySelector('.move-buttons');
 
-            let response, resp;
-            if (id !== null) {
-                response = await app.apiPut('/branch', {id, title, orderId});
-                resp = await response.json();
-            } else {
-                response = await app.apiPost('/branch', {questId, title, description: ""});
-                resp = await response.json();
-                if (response.ok) {
-                    el.setAttribute('data-branch-id', resp['id']);
+            if (id !== null) { // branch already exists
+                const response = await app.apiPut('/branch', {id, title, orderId: orderId.innerText});
+                const resp = await response.json();
+
+                if (!response.ok) {
+                    setTimedClass([el], "error");
+                    app.messages.error(`Ошибка ${response.status}!`, resp.info);
+                } else {
+                    setTimedClass([el], "success");
+                }
+            } else { // need to create new branch
+                branchesToCreate.push({questId, title, description: ""});
+                branchesToCreateElements.push({el, orderId, gotoButton, deleteButton, moveButtons});
+            }
+        });
+        if (branchesToCreate.length !== 0) {
+            const response = await app.apiPost('/branch/many', {questId: questId, branches: branchesToCreate});
+            const resp = await response.json();
+            if (response.ok) {
+                branchesToCreateElements.forEach((element, idx) => {
+                    const {el, orderId, gotoButton, deleteButton, moveButtons} = element;
+                    el.setAttribute('data-branch-id', resp[idx].id);
+                    orderId.innerText = resp[idx].orderid;
                     gotoButton.classList.remove('closed');
                     deleteButton.classList.add('closed');
                     moveButtons.classList.remove('closed');
-                }
+                    setTimedClass([el], "success");
+                });
             }
-
-            if (!response.ok) {
-                setTimedClass([el], "error");
-                app.messages.error(`Ошибка ${response.status}!`, resp.info);
-            } else {
-                setTimedClass([el], "success");
-            }
-        });
+        }
 
         forEachChild(permList, async (el) => {
             const id = el.getAttribute('data-permission-id');
@@ -357,7 +370,7 @@ export async function handler(element, app) {
         event.preventDefault();
         if (await app.modal.confirm("Точно хочешь удалить квест?", "Все ветки и задания в нём будут удалены!")) {
             await app.apiDelete('/quest', {id: questId});
-            await app.goto('/me-quests');
+            app.goto('/me-quests');
         }
     })
 }

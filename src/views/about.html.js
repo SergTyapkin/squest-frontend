@@ -1,5 +1,5 @@
 const html = `
-<div class="about-page">
+<div class="about-page flex-filler">
     <div class="side-item left" >
         <div class="text-max">КУДА ТЫ ПОПАЛ?</div>
         <div class="text"><span class="text-big">Здесь</span> ты сможешь найти <span class="text-big">онлайн-квест</span> по душе, созданный нашими професси<i>онал</i>ами.</div>

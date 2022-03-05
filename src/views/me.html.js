@@ -25,11 +25,11 @@ const html = `
             <div class="fields-container">
                 <div id="name-fields">
                     <label class="text-big">ТВОЙ ЛОГИН <span id="name-error"></span></label>
-                    <input id="name-input" type="text">
+                    <input id="name-input" type="text" autocomplete="off">
                 </div>
                 <div id="email-fields">
                     <label class="text-big">ТВОЙ E-mail <span id="email-error"></span></label>
-                    <input id="email-input" type="email">
+                    <input id="email-input" type="email" autocomplete="off">
                     <div class="info text-small">Подтверждать придётся и со старой почты, и с новой (но это не точно)</div>
                 </div>
             </div>
@@ -44,11 +44,11 @@ const html = `
             <div id="form-password-fields" class="fields-container roll-closed">
                 <div id="old-password-fields">
                     <div class="info text-small" id="old-password-result-info"></div>
-                    <input id="old-password-input" type="password" placeholder="Старый пароль">
+                    <input id="old-password-input" type="password" placeholder="Старый пароль" autocomplete="off">
                 </div>
                 <div id="new-password-fields">
                     <div class="info text-small" id="new-password-result-info"></div>
-                    <input id="new-password-input" type="password" placeholder="Новый пароль">
+                    <input id="new-password-input" type="password" placeholder="Новый пароль" autocomplete="off">
                 </div>
             </div>
             

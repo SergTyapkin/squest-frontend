@@ -32,7 +32,7 @@ export default class PopupMessages {
         return messageEl;
     }
 
-    __message(title, message = '', success = true) {
+    __message(title, message = '', success = true, disappearTime) {
         const messageEl = this.__createMessageEl(title, message, success);
         this.el.appendChild(messageEl);
 
@@ -42,14 +42,14 @@ export default class PopupMessages {
             setTimeout(() => {
                 messageEl.remove();
             }, this.transitionTimeMs);
-        }, this.dissappearAfterMs);
+        }, disappearTime);
     }
 
-    success(title, message = '') {
-        this.__message(title, message);
+    success(title, message = '', time = this.dissappearAfterMs) {
+        this.__message(title, message, true, time);
     }
 
-    error(title, message = '') {
-        this.__message(title, message, false);
+    error(title, message = '', time = this.dissappearAfterMs) {
+        this.__message(title, message, false, time);
     }
 }

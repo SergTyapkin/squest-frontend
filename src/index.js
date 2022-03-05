@@ -15,8 +15,8 @@ import './styles/scrollbars.styl';
 import { registerSW } from './modules/sw-installer.js';
 import App from './app';
 
-// const API_BASE_URL = 'https://your-site/api';
-const API_BASE_URL = 'http://squest-api.herokuapp.com/api';
+//const API_BASE_URL = 'http://127.0.0.1:9000/api';
+const API_BASE_URL = 'https://squest-api.herokuapp.com/api';
 const APP_TITLE = 'SQuest';
 
 const headContentHTML = '<link rel="icon" href="/images/favicon.ico" type="image/x-icon">';
@@ -32,7 +32,7 @@ const baseContentHTML = `
 
 <div id="app">
     <div style="opacity: 0">
-        squest - сайт для создания или прохождения чужих онлайн-квестов <br>
+        SQuest - сайт для создания или прохождения чужих онлайн-квестов <br>
         Делайте свои или проходите уже созданные и проверенные другими людьми квесты <br>
         Здесь ты сможешь найти онлайн-квест по душе, созданный нашими профессионалами. <br>
         Всё бесплатно пока что) <br>

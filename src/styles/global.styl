@@ -155,14 +155,12 @@ linkButton
 
 .pc-hide
     display none
-@media (max-width 700px)
+
+@media ({mobile})
     *
-        transition opacity 0.3s, transform 0.2s !important
+        transition opacity 0.3s ease, transform 0.3s ease, width 0.3s ease, height 0.3s ease !important
 
     .mobile-hide
         display none
     .pc-hide
         display block
-
-    .navbar linkbutton
-        font-size 20px

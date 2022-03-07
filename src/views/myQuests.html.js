@@ -25,9 +25,12 @@ const html = `
 
 
 const questTemplate = Handlebars.compile(`
-<li data-quest-id="{{ id }}" data-quest-button class="text-big">{{ title }}
+<li data-quest-id="{{ id }}" data-quest-button class="text-big">
+    <span>
+        {{ title }}
+        <div class="text info">{{ description }}</div>
+    </span>
     <span class="text choose">ИЗМЕНИТЬ<arrow class="arrow right"></arrow></span>
-    <div class="text info">{{ description }}</div>
 </li>
 `);
 

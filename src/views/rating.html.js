@@ -24,8 +24,10 @@ const html = `
 
 const userTemplate = Handlebars.compile(`
 <li data-user-id="{{ id }}" class="text-big">
-    {{ name }}
-    <span class="text info">{{ rating }}</span>
+    <span>
+        {{ name }}
+        <span class="text info">{{ rating }}</span>
+    </span>
     <span class="text choose">Профиль<arrow class="arrow right"></arrow></span>
 </li>
 `)

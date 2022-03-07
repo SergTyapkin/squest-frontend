@@ -118,7 +118,7 @@ export async function handler(element, app) {
 
     titleInput.value = res.title;
     descriptionInput.value = res.description;
-    descriptionInput.style.height = descriptionInput.scrollHeight + 30 + "px";
+    descriptionInput.style.height = Math.min(descriptionInput.scrollHeight + 30, 1000) + "px";
     questionInput.value = res.question;
     branchTitleEl.innerText = '\"' + res.btitle + '\"';
     backButton.addEventListener('click', async () => {

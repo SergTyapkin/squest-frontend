@@ -33,6 +33,9 @@ const html = `
                 <div class="text-middle">
                     Вы прошли <span id="details-progress"></span> из <span id="details-length"></span>                
                 </div>
+                <br>
+                <div class="text-middle">Описание:</div>
+                <div id="details-quest-description" class="text"></div>
             </div>
         </div>
         <linkButton id="confirm-button" class="text-big-x button rounded outline centered" href="/play">Играть</linkButton>
@@ -70,6 +73,7 @@ export async function handler(element, app) {
     const chooseQuestBlock = $("choose-quest-block");
     const detailsBlock = $("details-block");
     const detailsQuestTitle = $("details-quest-title");
+    const detailsQuestDescription = $("details-quest-description");
     const detailsBranchTitle = $("details-branch-title");
     const detailsProgress = $("details-progress");
     const detailsLength = $("details-length");
@@ -127,8 +131,10 @@ export async function handler(element, app) {
                     chosenQuestId = questId;
 
                     const questTitle = button.firstChild.textContent.trim();
+                    const questDescription = button.querySelector('.info').textContent
                     const branchTitle = branchButton.firstChild.textContent.trim();
                     detailsQuestTitle.innerText = questTitle;
+                    detailsQuestDescription.innerText = questDescription;
                     detailsBranchTitle.innerText = branchTitle;
                     app.storage.questTitle = questTitle;
                     app.storage.branchTitle = branchTitle;

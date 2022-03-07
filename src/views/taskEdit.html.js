@@ -2,6 +2,7 @@ import {$, forEachChild, setTimedClass} from "../modules/utils.ts";
 import Handlebars from 'handlebars/dist/cjs/handlebars.js';
 import {fastRoll, openRoll} from "../modules/show-hide";
 import {marked} from "marked/marked.min.js"
+import {HtmlSanitizer} from "@jitbit/htmlsanitizer"
 import MarkdownRedactor from "../components/markdown-redactor";
 
 const html = `
@@ -138,8 +139,9 @@ export async function handler(element, app) {
     });
 
     // lifetime markdown-render
+    HtmlSanitizer.AllowedTags['AUDIO'] = true;
     function updateDescriptionRender() {
-        descriptionPreview.innerHTML = marked.parse(descriptionInput.value, {breaks: true, sanitize: true});
+        descriptionPreview.innerHTML = HtmlSanitizer.SanitizeHtml(marked.parse(descriptionInput.value, {breaks: true}));
     }
     descriptionInput.addEventListener('input', updateDescriptionRender);
     updateDescriptionRender();

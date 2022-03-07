@@ -1,6 +1,7 @@
 import {$, setTimedClass} from "../modules/utils.ts";
 import {hide, show} from "../modules/show-hide.js";
 import {marked} from "marked/marked.min.js"
+import {HtmlSanitizer} from "@jitbit/htmlsanitizer";
 
 const html = `
 <div id="back-button" class="title-container bg">
@@ -86,7 +87,8 @@ export async function handler(element, app) {
             progressbar.style.setProperty('--progress', res.progress / (res.length - 1));
 
             taskTitle.innerHTML = res.title;
-            taskDescription.innerHTML = marked.parse(res.description, {breaks: true, sanitize: true});
+            HtmlSanitizer.AllowedTags['AUDIO'] = true;
+            taskDescription.innerHTML = HtmlSanitizer.SanitizeHtml(marked.parse(res.description, {breaks: true}));
             taskQuestion.innerHTML = res.question;
 
             if (res.question === undefined) {

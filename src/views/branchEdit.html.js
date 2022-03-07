@@ -165,7 +165,9 @@ export async function handler(element, app) {
 
     // click on "new task"
     newTaskButton.addEventListener("click", () => {
-        const lastOrderid = Number(tasksList.lastElementChild.querySelector('.orderid').innerText);
+        let lastOrderid = 0;
+        if (tasksList.lastElementChild)
+            lastOrderid = Number(tasksList.lastElementChild.querySelector('.orderid').innerText);
 
         const taskFields = document.createElement('li');
         taskFields.innerHTML = taskTemplate({title: '', orderid: lastOrderid + 1});

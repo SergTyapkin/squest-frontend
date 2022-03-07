@@ -55,7 +55,10 @@ const html = `
         </div>
         <div id="answers-fields">
             <label class="text-big">Правильные ответы <span id="answers-error"></span></label>
-            <div class="info text-small">РегИсТр ответов не играет роли. Все ответы игроков перед проверкой переводятся в нижний регистр</div>
+            <div class="info text-small">
+                РегИсТр ответов не играет роли. Все ответы игроков перед проверкой переводятся в нижний регистр <br>
+                Чтобы любой ответ, введенный игроком, считался правильным, добавьте ответ "*"
+            </div>
             <ul id="answers-list" class="addable-list roll-closed">
                 <!-- answers will be there -->
             </ul>

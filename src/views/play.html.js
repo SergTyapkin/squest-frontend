@@ -88,6 +88,7 @@ export async function handler(element, app) {
 
             taskTitle.innerHTML = res.title;
             HtmlSanitizer.AllowedTags['AUDIO'] = true;
+            HtmlSanitizer.AllowedTags['S'] = true;
             taskDescription.innerHTML = HtmlSanitizer.SanitizeHtml(marked.parse(res.description, {breaks: true}));
             taskQuestion.innerHTML = res.question;
 

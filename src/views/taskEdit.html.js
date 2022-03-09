@@ -143,6 +143,7 @@ export async function handler(element, app) {
 
     // lifetime markdown-render
     HtmlSanitizer.AllowedTags['AUDIO'] = true;
+    HtmlSanitizer.AllowedTags['S'] = true;
     function updateDescriptionRender() {
         descriptionPreview.innerHTML = HtmlSanitizer.SanitizeHtml(marked.parse(descriptionInput.value, {breaks: true}));
     }

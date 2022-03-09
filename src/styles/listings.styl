@@ -123,6 +123,7 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
 
         > input
             flex 1
+            width 100%
             padding 10px
             box-sizing border-box
             float left
@@ -144,7 +145,7 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
         > div:last-child
             width 18%
             margin-left 20px
-        > div:not(last-child)
+        > div:not(:last-child)
             margin-right 20px
         > div.closed
             opacity 0
@@ -171,3 +172,18 @@ side-items-background-right = unquote("linear-gradient(320deg, " + _side-items-b
             > .button:last-child
                 opacity 0.2
                 pointer-events none
+
+@media ({mobile})
+    .addable-list
+        > li
+            > .orderid
+                font-size 20px
+            > div:not(:last-child)
+                margin-right 8px
+            > div:last-child
+                margin-left 8px
+            > div.goto-button
+                width 12%
+                padding 10px 0
+                .arrow
+                    margin-right 5px

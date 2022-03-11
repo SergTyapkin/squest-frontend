@@ -84,7 +84,7 @@ export async function handler(element, app) {
             questTitle.innerHTML = res.questtitle;
             branchTitle.innerHTML = res.branchtitle;
             progressNumber.innerText = res.progress;
-            progressbar.style.setProperty('--progress', res.progress / (res.length - 1));
+            progressbar.style.setProperty('--progress', String(res.progress / res.length));
 
             taskTitle.innerHTML = res.title;
             HtmlSanitizer.AllowedTags['AUDIO'] = true;

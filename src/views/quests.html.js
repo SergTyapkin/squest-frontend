@@ -52,7 +52,7 @@ const html = `
 const questTemplate = Handlebars.compile(`
 <li data-quest-id="{{ id }}" data-quest-button class="text-big">
     <span>
-        {{ title }}
+        <span class="title">{{ title }}</span>
         <div class="text info">{{ description }}</div>
     </span>
     <span class="text choose">ВЫБРАТЬ<arrow class="arrow right"></arrow></span>
@@ -65,7 +65,7 @@ const questTemplate = Handlebars.compile(`
 const branchTemplate = Handlebars.compile(`
 <li data-branch-id="{{ id }}" data-branch-button class="text-big">
     <span>
-        {{ title }}
+        <span class="title">{{ title }}</span>
         <div class="text info">{{ description }}</div>
     </span>
     <span class="text choose">ВЫБРАТЬ<span class="arrow right"></span></span>
@@ -136,9 +136,9 @@ export async function handler(element, app) {
                     chosenBranchId = branchId;
                     chosenQuestId = questId;
 
-                    const questTitle = button.firstChild.textContent.trim();
-                    const questDescription = button.querySelector('.info').textContent
-                    const branchTitle = branchButton.firstChild.textContent.trim();
+                    const questTitle = button.querySelector('.title').innerText.trim();
+                    const questDescription = button.querySelector('.info').innerText;
+                    const branchTitle = branchButton.querySelector('.title').innerText.trim();
                     detailsQuestTitle.innerText = questTitle;
                     detailsQuestDescription.innerText = questDescription;
                     detailsBranchTitle.innerText = branchTitle;

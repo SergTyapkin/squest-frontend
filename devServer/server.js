@@ -5,7 +5,8 @@ const HTTPS_PORT = 443;
 const STATIC_DIR = 'build';
 const PRIVATE_KEY_PATH = 'devServer/ssl/server.key';
 const PUBLIC_KEY_PATH = 'devServer/ssl/server.crt';
-const API_URL = 'http://localhost:8000';
+//const API_URL = 'http://squest-api.herokuapp.com/api';
+const API_URL = 'http://127.0.0.1:9000/api';
 
 const path = require('path');
 const fs = require('fs');
@@ -20,6 +21,7 @@ const port = process.env.PORT || HTTP_PORT;
 const app = express();
 
 app.use('/api', proxy(API_URL));
+console.log(API_URL);
 app.use('/media', proxy(API_URL, {
     proxyReqPathResolver: function (req) {
         return '/media' + req.url;

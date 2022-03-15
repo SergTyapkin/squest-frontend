@@ -5,10 +5,10 @@ const html = `
 <div class="profile-page">
     <div class="title-container clickable text-big">
         <linkButton href="/play">
-            <span class="arrow left"></span>К квесту
+            <span class="arrow left"></span>В игру
         </linkButton>
-        <linkButton href="/me-quests">
-            Мои квесты
+        <linkButton href="/quests">
+            Все квесты
         </linkButton>
         <linkButton href="/rating">
             Рейтинг<span class="arrow right"></span>

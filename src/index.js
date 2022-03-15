@@ -23,7 +23,7 @@ const baseContentHTML = `
 <div id="navbar" class="navbar absolute-wrapper">
     <div id="progress" class="center lighting-text progress">0</div>
     <div id="progressbar" class="bottom progressbar" style="--progress: 1"></div>
-    <linkButton class="left  side-item opacity-in delayedBig" href="/quests" >Квесты</linkButton>
+    <linkButton class="left  side-item opacity-in delayedBig" href="/me-quests">Мои квесты</linkButton>
     <linkButton class="right side-item opacity-in delayedBig" href="/me">
         <span id="username">Войти</span><img id="avatar" class="image-small" src="images/default_avatar.png" alt="">
     </linkButton>

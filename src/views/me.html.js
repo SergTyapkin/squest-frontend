@@ -23,6 +23,7 @@ const html = `
             </div>
             
             <div class="fields-container">
+                <div id="error" class="error-info text-middle"></div>
                 <div id="name-fields">
                     <label class="text-big">ТВОЙ ЛОГИН <span id="name-error"></span></label>
                     <input id="name-input" type="text" autocomplete="off">
@@ -42,6 +43,7 @@ const html = `
         
         <form id="form-password">
             <div id="form-password-fields" class="fields-container roll-closed">
+                <div id="password-error" class="error-info text-middle"></div>
                 <div id="old-password-fields">
                     <div class="info text-small" id="old-password-result-info"></div>
                     <input id="old-password-input" type="password" placeholder="Старый пароль" autocomplete="off">
@@ -68,22 +70,25 @@ const html = `
 export function handler(element, app) {
     element.innerHTML = html;
 
-    const form = $("form-profile")
-    const nameInput = $("name-input")
-    const emailInput = $("email-input")
-    const nameFields = $("name-fields")
-    const emailFields = $("email-fields")
+    const form = $("form-profile");
+    const nameInput = $("name-input");
+    const emailInput = $("email-input");
+    const nameFields = $("name-fields");
+    const emailFields = $("email-fields");
 
-    const formPassword = $("form-password")
+    const formPassword = $("form-password");
     const formPasswordFields = $("form-password-fields")
     const oldPasswordInput = $("old-password-input")
     const newPasswordInput = $("new-password-input")
 
-    const logoutButton = $("logout-button")
-    const adminButton = $("admin-button")
+    const error = $("error");
+    const passwordError = $("password-error");
 
-    nameInput.value = app.storage.username
-    emailInput.value = app.storage.email
+    const logoutButton = $("logout-button");
+    const adminButton = $("admin-button");
+
+    nameInput.value = app.storage.username;
+    emailInput.value = app.storage.email;
     if (app.storage.isAdmin)
         show(adminButton);
 
@@ -95,7 +100,7 @@ export function handler(element, app) {
         // const avatarUrl ="?";
 
         const response = await app.apiPut("/user", {username, email})
-        const res = await response.json()
+        const res = await response.json();
 
         switch (response.status) {
             case 200:
@@ -103,7 +108,9 @@ export function handler(element, app) {
                 setTimedClass([nameFields, emailFields], "success");
                 break;
             case 401:
-                setTimedClass([nameFields, emailFields], "error");
+            case 409:
+                error.innerText = res.info;
+                setTimedClass([error, nameFields, emailFields], "error");
                 break;
             default:
                 app.messages.error(`Ошибка ${response.status}!`, res.info);
@@ -122,13 +129,15 @@ export function handler(element, app) {
         const newPassword = newPasswordInput.value.trim();
 
         const response = await app.apiPut("/user/password", {oldPassword, newPassword});
-
+        const res = await response.json();
         switch (response.status) {
             case 200:
                 setTimedClass([formPasswordFields], "success");
                 break;
             case 401:
-                setTimedClass([formPasswordFields], "error");
+                passwordError.innerText = res.info;
+                openRoll(formPasswordFields);
+                setTimedClass([passwordError, formPasswordFields], "error");
                 break;
             default:
                 app.messages.error(`Ошибка ${response.status}!`, res.info);

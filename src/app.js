@@ -229,7 +229,14 @@ export default class App {
     }
 
     async getLoginedUser() {
-        const response = await this.apiGet("/user") // tries to get user by cookie
+        let response;
+        try {
+            response = await this.apiGet("/user") // tries to get user by cookie
+        } catch {
+            this.messages.error(`Сервер по адресу ${this.apiUrl} недоступен`, "Обновите страницу позже");
+            this.goto('/');
+            return;
+        }
         const res = await response.json()
         if (response.ok) {
             this.setUser(res);

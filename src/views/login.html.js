@@ -8,6 +8,7 @@ const html = `
     </div>
     
     <div class="fields-container">
+        <div id="error" class="error-info text-middle"></div>
         <div id="name-fields">
             <label class="text-big">ЛОГИН <span id="name-error"></span></label>
             <input id="name-input" type="text" autocomplete="on">
@@ -33,8 +34,7 @@ export function handler(element, app) {
     const passwordFields = $("password-fields");
     const nameInput = $("name-input");
     const passwordInput = $("password-input");
-    const nameError = $("name-error");
-    const passwordError = $("password-error");
+    const error = $("error");
 
     nameInput.focus();
 
@@ -52,7 +52,8 @@ export function handler(element, app) {
                 app.goto("/me");
                 break;
             case 401:
-                setTimedClass([nameFields, passwordFields], "error");
+                error.innerText = res.info;
+                setTimedClass([error, nameFields, passwordFields], "error");
                 break;
             default:
                 app.messages.error(`Ошибка ${response.status}!`, res.info);

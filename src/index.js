@@ -15,7 +15,7 @@ import './styles/scrollbars.styl';
 import { registerSW } from './modules/sw-installer.js';
 import App from './app';
 
-const API_BASE_URL = 'https://squest.herokuapp.com/api';
+const API_BASE_URL = '//squest.herokuapp.com/api';
 const APP_TITLE = 'SQuest';
 
 const headContentHTML = '<link rel="icon" href="/images/favicon.ico" type="image/x-icon">';
@@ -53,13 +53,14 @@ async function main() {
     document.body.innerHTML = baseContentHTML + document.body.innerHTML;
     document.body.classList.add('scrollable');
 
-    await registerSW();
+    //await registerSW();
 
-    const { hostname, origin, pathname, search } = window.location;
+    const { protocol, hostname, pathname, search } = window.location;
     let apiUrl = API_BASE_URL;
     if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
-        apiUrl = 'http://127.0.0.1:9000/api';
+        apiUrl = '//127.0.0.1:9000/api';
     }
+    apiUrl = protocol + apiUrl;
     const app = new App(APP_TITLE, apiUrl, 'app');
     app.setUserElements('username', 'avatar');
     await app.getLoginedUser();

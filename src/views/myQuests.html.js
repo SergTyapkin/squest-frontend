@@ -26,7 +26,7 @@ const html = `
 
 const questTemplate = Handlebars.compile(`
 <li data-quest-id="{{ id }}" data-quest-button class="text-big">
-    <span>
+    <span class="main-info">
         {{ title }}
         <div class="text info">{{ description }}</div>
     </span>

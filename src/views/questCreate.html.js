@@ -148,19 +148,18 @@ export function handler(element, app) {
                 return;
         }
 
+        const branchesToCreate = [];
         forEachChild(branchesList, async (el) => {
             const title = el.querySelector('input').value.trim()
-
-            const response = await app.apiPost('/branch', {questId, title, description: ""});
-            const resp = await response.json();
-
-            if (!response.ok) {
-                setTimedClass([el], "error");
-                app.messages.error(`Ошибка ${response.status}!`, resp.info);
-            } else {
-                setTimedClass([el], "success");
-            }
+            branchesToCreate.push({questId, title, description: ""});
         });
+        if (branchesToCreate.length !== 0) {
+            const response = await app.apiPost('/branch/many', {questId: questId, branches: branchesToCreate});
+            const resp = await response.json();
+            if (!response.ok) {
+                app.messages.error(`Ошибка ${response.status}!`, resp.info);
+            }
+        }
 
         forEachChild(permList, async (el) => {
             const name = el.querySelector('input[type=text]').value.trim()

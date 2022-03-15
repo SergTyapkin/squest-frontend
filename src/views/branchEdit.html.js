@@ -220,7 +220,7 @@ export async function handler(element, app) {
     });
 
 
-    // save branch => go to my quests
+    // save branch
     saveButton.addEventListener("click", async (event) => {
         event.preventDefault();
 
@@ -242,38 +242,50 @@ export async function handler(element, app) {
                 break;
         }
 
+        const tasksToCreate = [];
+        const tasksToCreateElements = [];
         forEachChild(tasksList, async (el) => {
             const id = el.getAttribute('data-task-id');
-            const orderId = el.querySelector('.orderid').innerText;
+            const orderId = el.querySelector('.orderid');
             const title = el.querySelector('input').value.trim()
-            const gotoButton = el.querySelector('.goto-button')
+            const gotoButton = el.querySelector('.goto-button');
+            const deleteButton = el.querySelector('.delete-button');
             const moveButtons = el.querySelector('.move-buttons');
 
-            let response, resp;
-            if (id !== null) {
-                response = await app.apiPut('/task', {id, title, orderId});
-                resp = await response.json();
-            } else {
-                response = await app.apiPost('/task', {branchId, title, description: "", question: "", answers: []});
-                resp = await response.json();
-                if (response.ok) {
-                    el.setAttribute('data-task-id', resp['id']);
-                    gotoButton.classList.remove('closed');
-                    moveButtons.classList.remove('closed');
-                }
-            }
+            if (id !== null) { // branch already exists
+                const response = await app.apiPut('/task', {id, title, orderId});
+                const resp = await response.json();
 
-            if (!response.ok) {
-                setTimedClass([el], "error");
-                app.messages.error(`Ошибка ${response.status}!`, resp.info);
-            } else {
-                setTimedClass([el], "success");
+                if (!response.ok) {
+                    setTimedClass([el], "error");
+                    app.messages.error(`Ошибка ${response.status}!`, resp.info);
+                } else {
+                    setTimedClass([el], "success");
+                }
+            } else { // need to create new branch
+                tasksToCreate.push({branchId, title, description: "", question: "", answers: []});
+                tasksToCreateElements.push({el, orderId, gotoButton, deleteButton, moveButtons});
             }
         });
-
+        if (tasksToCreate.length !== 0) {
+            const response = await app.apiPost('/task/many', {branchId: branchId, tasks: tasksToCreate});
+            const resp = await response.json();
+            if (response.ok) {
+                tasksToCreateElements.forEach((element, idx) => {
+                    const {el, orderId, gotoButton, deleteButton, moveButtons} = element;
+                    el.setAttribute('data-task-id', resp[idx].id);
+                    orderId.innerText = resp[idx].orderid;
+                    gotoButton.classList.remove('closed');
+                    moveButtons.classList.remove('closed');
+                    setTimedClass([el], "success");
+                });
+            } else {
+                setTimedClass([tasksList], "error");
+                app.messages.error(`Ошибка ${response.status}!`, resp.info);
+            }
+        }
         window.onbeforeunload = () => null;
     });
-
 
     deleteButton.addEventListener('click', async (event) => {
         event.preventDefault();

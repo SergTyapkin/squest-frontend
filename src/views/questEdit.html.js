@@ -267,7 +267,7 @@ export async function handler(element, app) {
     });
 
 
-    // save quest => go to my quests
+    // save quest
     saveButton.addEventListener("click", async (event) => {
         event.preventDefault();
 
@@ -327,6 +327,9 @@ export async function handler(element, app) {
                     moveButtons.classList.remove('closed');
                     setTimedClass([el], "success");
                 });
+            } else {
+                setTimedClass([branchesList], "error");
+                app.messages.error(`Ошибка ${response.status}!`, resp.info);
             }
         }
 

@@ -18,9 +18,11 @@ import * as questEdit from './views/questEdit.html.js';
 import * as myQuests from './views/myQuests.html.js';
 import * as branchEdit from './views/branchEdit.html.js';
 import * as taskEdit from './views/taskEdit.html.js';
+import {BASE_URL_PART} from "./index";
 
 const DEFAULT_AVATAR_URL = '/images/default_avatar.png';
 const DEFAULT_BACKGROUND = undefined; //'linear-gradient(30deg, #110612 5%, #153131 15%, #2e143c 60%, #5d4e25 100%)';
+const PATH_BASE_PART = '/squest';
 
 export default class App {
      constructor(name, apiUrl, elId) {
@@ -42,6 +44,7 @@ export default class App {
         this.name = name;
         this.apiUrl = apiUrl;
         this.element = elId;
+        this.pathBasePart = PATH_BASE_PART;
 
         this.messages = new PopupMessages();
         this.modal = new Modal();
@@ -135,7 +138,7 @@ export default class App {
         ];
 
         window.addEventListener('popstate', async () => {
-            await this.goto(location.pathname + location.search, false);
+            await this.goto(removeBasePartOnStart(location.pathname + location.search), false);
         });
 
         document.body.addEventListener('click', this.__bodyClick.bind(this));
@@ -174,7 +177,7 @@ export default class App {
         }
 
         if (pushState) {
-            history.pushState(null, null, path);
+            history.pushState(null, null, BASE_URL_PART + path);
         }
 
         let { handler = view404.handler, authRequired = false, background = DEFAULT_BACKGROUND, title = 'Страница не найдена' } = this.__getHandler(path);
@@ -186,7 +189,7 @@ export default class App {
             //     this.setUser(res.name, res.avatarurl, res.isadmin, res.email); // we are logined
             // } else {
                 title = `${this.name} | Авторизация`; // not logined -> go to login
-                history.pushState(null, null, '/login');
+                history.pushState(null, null, BASE_URL_PART + '/login');
                 handler = login.handler;
             // }
         }
@@ -242,4 +245,8 @@ export default class App {
             this.setUser(res);
         }
     }
+}
+
+export function removeBasePartOnStart(string) {
+    return string.replace(new RegExp(`^${BASE_URL_PART}`, 'i'), '');
 }

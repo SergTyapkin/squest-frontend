@@ -13,12 +13,15 @@ import './styles/markdown-redactor.styl';
 import './styles/scrollbars.styl';
 
 import { registerSW } from './modules/sw-installer.js';
-import App from './app';
+import App, {removeBasePartOnStart} from './app';
 
-const API_BASE_URL = '//squest.herokuapp.com/api';
+//const API_BASE_URL = 'squest.herokuapp.com/api';
+//const ENABLE_LOCALHOST_REDIRECTING = false;
 const APP_TITLE = 'SQuest';
+export const BASE_URL_PART = '/squest';
+const API_URL_PREFIX = BASE_URL_PART + '/api';
 
-const headContentHTML = '<link rel="icon" href="/images/favicon.ico" type="image/x-icon">';
+const headContentHTML = `<link rel="icon" href="${BASE_URL_PART}/images/favicon.ico" type="image/x-icon">`;
 const baseContentHTML = `
 <div id="navbar" class="navbar absolute-wrapper">
     <div id="progress" class="center lighting-text progress">0</div>
@@ -38,9 +41,9 @@ const baseContentHTML = `
         1. регистрируешься <br>
         2. выбираешь квест и ветку <br>
         3. чем больше проходишь - тем выше ты в рейтинге <br>
-        Если ты это читаешь на сайте, значит произошла какая-то ошибка на сервере. Попробуй обновить страницу через некоторое время. Этот текст был только для поисковика)
+        <i><small>Если ты это читаешь на сайте, значит произошла какая-то ошибка на сервере. Попробуй обновить страницу через некоторое время. Этот текст только для поисковика)</small></i>
     </div>
-    <img src="/images/gradient_loading.gif" alt="loading..." class="loading-image center">
+    <img src="${BASE_URL_PART}/images/gradient_loading.gif" alt="loading..." class="loading-image center">
 </div>
 `;
 
@@ -56,16 +59,16 @@ async function main() {
     //await registerSW();
 
     const { protocol, hostname, pathname, search } = window.location;
-    let apiUrl = API_BASE_URL;
-    if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.')) {
-        apiUrl = '//127.0.0.1:9000/api';
-    }
-    apiUrl = protocol + apiUrl;
+    let apiUrl = hostname; //API_BASE_URL;
+    // if (ENABLE_LOCALHOST_REDIRECTING && (hostname === 'localhost' || hostname === '127.0.0.1' || hostname.startsWith('192.168.'))) {
+    //     apiUrl = '127.0.0.1:9000/api';
+    // }
+    apiUrl = protocol + '//' + apiUrl + API_URL_PREFIX;
     const app = new App(APP_TITLE, apiUrl, 'app');
     app.setUserElements('username', 'avatar');
     await app.getLoginedUser();
 
-    app.goto(pathname + search);
+    app.goto(removeBasePartOnStart(pathname + search));
 }
 
 await main();

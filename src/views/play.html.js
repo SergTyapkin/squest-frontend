@@ -1,6 +1,7 @@
 import {$, setTimedClass} from "../modules/utils.ts";
 import {hide, show} from "../modules/show-hide.js";
-import {marked} from "marked/marked.min.js"
+import {marked} from "marked/marked.min.js";
+import {HtmlSanitizer} from "@jitbit/htmlsanitizer";
 
 const html = `
 <div id="back-button" class="title-container bg">

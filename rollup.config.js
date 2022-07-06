@@ -44,6 +44,6 @@ export default {
                 { src: 'src/sw.js', dest: 'build/' },
                 { src: 'index.html', dest: 'build/' }
             ]
-        })
+        }),
     ]
 };

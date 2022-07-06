@@ -1,7 +1,8 @@
 import {$, forEachChild, setTimedClass} from "../modules/utils.ts";
 import Handlebars from 'handlebars/dist/cjs/handlebars.js';
 import {fastRoll, openRoll} from "../modules/show-hide";
-import {marked} from "marked/marked.min.js"
+import {marked} from "marked/marked.min.js";
+import {HtmlSanitizer} from "@jitbit/htmlsanitizer";
 import MarkdownRedactor from "../components/markdown-redactor";
 
 const html = `

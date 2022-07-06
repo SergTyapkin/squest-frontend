@@ -13,6 +13,7 @@ const html = `
 <div id="data-edit-form" class="form">
     <div class="info-container">
         <div class="text-max">Изменить квест</div>
+        <div class="text hide hidden" id="quest-info">Вы - соавтор квеста, а не создатель, потому некоторые возможности вам недоступны</div>
     </div>
             
     <div class="fields-container">
@@ -33,12 +34,20 @@ const html = `
             <input id="branches-button-new" type="button" value="Добавить ветку">
         </div>
         <div id="permissions-fields">
-            <label class="text-big">Права доступа <span id="branches-error"></span></label>
+            <label class="text-big">Права доступа <span id="permissions-error"></span></label>
             <div class="info text-small">Белый список - те, кому разрешен просмотр квеста. Черный - кому запрещён. Черный не имеет значения, если есть белый</div>
             <ul id="permissions-list" class="addable-list roll-closed">
                 <!-- Permissions will be there -->
             </ul>
             <input id="permissions-button-new" type="button" value="Добавить пользователя">
+        </div>
+        <div id="helpers-fields">
+            <label class="text-big">Соавторы <span id="helpers-error"></span></label>
+            <div class="info text-small">Хотите делать квест вместе? Просто добавьте никнеймы соавторов ниже и они получат доступ к редактированию квеста</div>
+            <ul id="helpers-list" class="addable-list roll-closed">
+                <!-- Helpers will be there -->
+            </ul>
+            <input id="helpers-button-new" type="button" value="Добавить соавтора">
         </div>
         <div id="published-fields">
             <label class="text-big">Опубликован <span id="published-error"></span></label>
@@ -85,16 +94,24 @@ const permissionTemplate = Handlebars.compile(`
     </div>
 <!--/li-->`);
 
+const helperTemplate = Handlebars.compile(`
+<!--li-->
+    <div class="button rounded"><span class="cross"></span></div>
+    <input type="text" placeholder="Логин пользователя" value="{{ name }}">
+<!--/li-->`);
+
 export async function handler(element, app) {
     element.innerHTML = html;
     const searchParams = new URL(window.location.href).searchParams;
     const questId = searchParams.get('questId');
 
     const form = $("data-edit-form");
+    const questInfo = $("quest-info");
     const titleFields = $("title-fields");
     const descriptionFields = $("description-fields");
     const branchesFields = $("branches-fields");
     const permissionsFields = $("permissions-fields");
+    const helpersFields = $("helpers-fields");
     const publishedFields = $("published-fields");
 
     const titleInput = $("title-input");
@@ -107,7 +124,9 @@ export async function handler(element, app) {
     const branchesList = $("branches-list");
     const newBranchButton = $("branches-button-new");
     const permList = $("permissions-list");
+    const helpersList = $("helpers-list");
     const newPermButton = $("permissions-button-new");
+    const newHelperButton = $("helpers-button-new");
     const saveButton = $("save-button");
     const deleteButton = $("delete-button");
 
@@ -116,8 +135,14 @@ export async function handler(element, app) {
 
 
     let response = await app.apiGet(`/quest?questId=${questId}`);
-    let questData = await response.json();
-
+    const questData = await response.json();
+    let helperMode = false;
+    if (questData.helper) {
+        helperMode = true;
+        helpersFields.classList.add('hidden');
+        deleteButton.classList.add('hidden');
+        questInfo.classList.remove('hide', 'hidden');
+    }
     titleInput.value = questData.title;
     descriptionInput.value = questData.description;
     publishedInput.checked = questData.ispublished;
@@ -191,6 +216,31 @@ export async function handler(element, app) {
         });
     });
     openRoll(permList);
+
+    // --- get existing helpers
+    if (!helperMode) {
+    response = await app.apiGet(`/quest/helpers?questId=${questId}`);
+    const helpersData = await response.json();
+    helpersList.innerHTML = "";
+    helpersData.forEach((helper) => {
+        const helpersFields = document.createElement('li');
+        helpersFields.innerHTML = helperTemplate(helper);
+        helpersFields.setAttribute('data-helper-id', helper.id);
+        helpersList.append(helpersFields);
+
+        const deleteButton = helpersFields.firstElementChild;
+
+        deleteButton.addEventListener('click', async () => {
+            const helperId = helpersFields.getAttribute('data-helper-id');
+            if (!await app.modal.confirm('Точно удаляем запись доступа?'))
+                return;
+            app.apiDelete('/quest/helpers', {id: helperId});
+            helpersFields.remove();
+            fastRoll(helpersList);
+        });
+    });
+    openRoll(helpersList);
+    }
 
 
     // click on "new branch"
@@ -266,6 +316,29 @@ export async function handler(element, app) {
         openRoll(permList);
     });
 
+    // click on "new helper"
+    if (!helperMode) {
+    newHelperButton.addEventListener("click", () => {
+        const helpersFields = document.createElement('li');
+        helpersFields.innerHTML = helperTemplate();
+        helpersList.append(helpersFields);
+
+        const deleteButton = helpersFields.firstElementChild;
+
+        deleteButton.addEventListener('click', async () => {
+            const helperId = helpersFields.getAttribute('data-permission-id');
+            if (helperId !== null) {
+                if (await app.modal.confirm('Точно удаляем соавтора?'))
+                    app.apiDelete('/quest/privacy', {id: helperId});
+                else
+                    return;
+            }
+            helpersFields.remove();
+            fastRoll(helpersList);
+        });
+        openRoll(helpersList);
+    });
+    }
 
     // save quest
     saveButton.addEventListener("click", async (event) => {
@@ -365,10 +438,43 @@ export async function handler(element, app) {
             }
         });
 
+        if (!helperMode) {
+        forEachChild(helpersList, async (el) => {
+            const id = el.getAttribute('data-helper-id');
+            const name = el.querySelector('input[type=text]').value.trim()
+
+            let response, resp;
+            if (id !== null) {
+                response = await app.apiPut('/quest/helpers', {id, questId, name});
+                resp = await response.json();
+            } else {
+                response = await app.apiPost('/quest/helpers', {questId, name});
+                resp = await response.json();
+                if (response.ok)
+                    el.setAttribute('data-helper-id', resp['id']);
+            }
+
+            switch (response.status) {
+                case 200:
+                    setTimedClass([el], "success");
+                    break;
+                case 404:
+                    setTimedClass([el], "error");
+                    break;
+                case 409:
+                    setTimedClass([el], "error");
+                    break;
+                default:
+                    app.messages.error(`Ошибка ${response.status}!`, resp.info);
+                    break;
+            }
+        });
+        }
+
         window.onbeforeunload = () => null;
     });
 
-
+    if (!helperMode) {
     deleteButton.addEventListener('click', async (event) => {
         event.preventDefault();
         if (await app.modal.confirm("Точно хочешь удалить квест?", "Все ветки и задания в нём будут удалены!")) {
@@ -376,4 +482,5 @@ export async function handler(element, app) {
             app.goto('/me-quests');
         }
     })
+    }
 }

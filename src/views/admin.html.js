@@ -3,7 +3,7 @@ import Handlebars from 'handlebars/dist/cjs/handlebars.js';
 import {fastRoll, openRoll} from "../modules/show-hide";
 import {marked} from "marked/marked.min.js"
 import MarkdownRedactor from "../components/markdown-redactor";
-import {BASE_URL_PART} from "../index"
+import {BASE_URL_PART} from "../constants"
 
 const html = `
 <div class="title-container clickable low-opacity">

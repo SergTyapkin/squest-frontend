@@ -18,11 +18,7 @@ import * as questEdit from './views/questEdit.html.js';
 import * as myQuests from './views/myQuests.html.js';
 import * as branchEdit from './views/branchEdit.html.js';
 import * as taskEdit from './views/taskEdit.html.js';
-import {BASE_URL_PART} from "./index";
-
-const DEFAULT_AVATAR_URL = '/images/default_avatar.png';
-const DEFAULT_BACKGROUND = undefined; //'linear-gradient(30deg, #110612 5%, #153131 15%, #2e143c 60%, #5d4e25 100%)';
-const PATH_BASE_PART = '/squest';
+import {BASE_URL_PART, PATH_BASE_PART, DEFAULT_AVATAR_URL, DEFAULT_BACKGROUND} from "./constants.js";
 
 export default class App {
      constructor(name, apiUrl, elId) {

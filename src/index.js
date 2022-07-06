@@ -15,18 +15,14 @@ import './styles/scrollbars.styl';
 import { registerSW } from './modules/sw-installer.js';
 import App, {removeBasePartOnStart} from './app';
 
-//const API_BASE_URL = 'squest.herokuapp.com/api';
-//const ENABLE_LOCALHOST_REDIRECTING = false;
-const APP_TITLE = 'SQuest';
-export const BASE_URL_PART = '/squest';
-const API_URL_PREFIX = BASE_URL_PART + '/api';
+import {APP_TITLE, BASE_URL_PART, API_URL_PREFIX} from './constants.js'
 
 const headContentHTML = `<link rel="icon" href="${BASE_URL_PART}/images/favicon.ico" type="image/x-icon">`;
 const baseContentHTML = `
 <div id="navbar" class="navbar absolute-wrapper">
     <div id="progress" class="center lighting-text progress">0</div>
     <div id="progressbar" class="bottom progressbar" style="--progress: 1"></div>
-    <linkButton class="left  side-item opacity-in delayedBig" href="/me-quests">Мои квесты</linkButton>
+    <linkButton class="left  side-item opacity-in delayedBig" href="/quests">Квесты</linkButton>
     <linkButton class="right side-item opacity-in delayedBig" href="/me">
         <span id="username">Войти</span><img id="avatar" class="image-small" src="images/default_avatar.png" alt="">
     </linkButton>

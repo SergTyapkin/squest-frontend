@@ -7,8 +7,8 @@ const html = `
         <linkButton href="/play">
             <span class="arrow left"></span>В игру
         </linkButton>
-        <linkButton href="/quests">
-            Все квесты
+        <linkButton href="/me-quests">
+            Мои квесты
         </linkButton>
         <linkButton href="/rating">
             Рейтинг<span class="arrow right"></span>

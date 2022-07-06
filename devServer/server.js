@@ -1,37 +1,54 @@
-'use strict';
+fs = require("fs");
+http = require('http');
+https = require('https');
+express = require('express');
+path = require('path');
+proxy = require('express-http-proxy');
+app = express();
 
-const HTTP_PORT = 80;
-const HTTPS_PORT = 443;
-const STATIC_DIR = 'build';
-const PRIVATE_KEY_PATH = 'devServer/ssl/server.key';
-const PUBLIC_KEY_PATH = 'devServer/ssl/server.crt';
-//const API_URL = 'http://squest-api.herokuapp.com/api';
-const API_URL = 'http://127.0.0.1:9000/api';
+ROOT_DIR = path.resolve(__dirname, '..');
 
-const path = require('path');
-const fs = require('fs');
+PRIVATE_KEY_PATH = 'devServer/ssl/server.key';
+PUBLIC_KEY_PATH = 'devServer/ssl/server.crt';
 
-const http = require('http');
-const https = require('https');
+DEFAULT_STATIC_PATH = 'build';
+SITE_CONFIG = {
+    prefix: '/squest',
+    apiPath: '/api',
+    apiRedirectUrl: 'http://127.0.0.1:9000/api',
 
-const express = require('express');
-const proxy = require('express-http-proxy');
+    staticDir: 'build',
+    indexHtml: 'index.html',
+    SPA: true,
+}
 
-const port = process.env.PORT || HTTP_PORT;
-const app = express();
 
-app.use('/api', proxy(API_URL));
-console.log(API_URL);
-app.use('/media', proxy(API_URL, {
-    proxyReqPathResolver: function (req) {
-        return '/media' + req.url;
+// api requests
+app.use(`${SITE_CONFIG.prefix}${SITE_CONFIG.apiPath}`, proxy(SITE_CONFIG.apiRedirectUrl));
+
+// path files requests
+app.use(`${SITE_CONFIG.prefix}`, express.static(SITE_CONFIG.staticDir));
+
+// another path requests -> resolve to index.html
+app.get(`${SITE_CONFIG.prefix}/:path`, (req, res) => {
+    if (SITE_CONFIG.SPA) {
+        console.log(req.path, "send index.html");
+        res.sendFile(path.resolve(ROOT_DIR, SITE_CONFIG.staticDir, SITE_CONFIG.indexHtml || 'index.html'));
+        return;
     }
-}));
-
-app.use('/', express.static(path.resolve(__dirname, '..', STATIC_DIR)));
-app.get('/*', (req, res) => {
-    res.sendFile(path.resolve(__dirname, '..', STATIC_DIR, 'index.html'));
+    res.sendFile(path.resolve(ROOT_DIR, SITE_CONFIG.staticDir, req.params.path));
 });
+
+app.use(`/`, express.static(DEFAULT_STATIC_PATH));
+
+//The 404 route with global index.html
+app.get('*', function(req, res){
+    res.status(404).sendFile(path.resolve(ROOT_DIR, DEFAULT_STATIC_PATH, 'index.html'));
+});
+
+
+const HTTP_PORT = process.env.PORT || 80;
+const HTTPS_PORT = process.env.PORT || 443;
 
 const privateKey = fs.readFileSync(PRIVATE_KEY_PATH);
 const certificate = fs.readFileSync(PUBLIC_KEY_PATH);

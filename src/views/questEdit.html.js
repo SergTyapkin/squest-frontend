@@ -70,7 +70,7 @@ const html = `
                 <span>Ссылка на квест:</span>
                 <a id="link-access-link" target="_blank" href="">Rfrfz-nj ccskrf</a>
                 <span id="button-copy-link" class="button rounded link-button">
-                    <img src="${BASE_URL_PART}/images/link.svg" alt="copy" class="link-image">
+                    <img src="${BASE_URL_PART}/images/link_copy.svg" alt="copy" class="link-image">
                 </span>
                 <br>
                 <span>Ссылка в виде QR:</span>

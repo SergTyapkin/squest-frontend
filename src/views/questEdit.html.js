@@ -381,9 +381,8 @@ export async function handler(element, app) {
                 const response = await app.apiGet(`/quest/uid?id=${questId}`);
                 const questData = await response.json();
                 questUid = questData.uid;
-                console.log(questData)
 
-                accessLink = location.origin + `/quest?uid=${questUid}`;
+                accessLink = `${location.origin}${BASE_URL_PART}/quest?uid=${questUid}`;
                 accessLinkEl.innerText = accessLink;
                 accessLinkEl.setAttribute('href', accessLink);
                 const qr = new qrcode(0, 'H');

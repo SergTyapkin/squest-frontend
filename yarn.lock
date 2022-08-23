@@ -2752,6 +2752,11 @@ q@^1.1.2:
   resolved "https://registry.yarnpkg.com/q/-/q-1.5.1.tgz#7e32f75b41381291d04611f1bf14109ac00651d7"
   integrity sha512-kV/CThkXo6xyFEZUugw/+pIOywXcDbFYgSct5cT3gqlbkBE1SJdwy6UQoZvodiWF/ckQLZyDE/Bu1M6gVu5lVw==
 
+qrcode-generator-es6@^1.1.4:
+  version "1.1.4"
+  resolved "https://registry.yarnpkg.com/qrcode-generator-es6/-/qrcode-generator-es6-1.1.4.tgz#ada07154c7c6e4572390a51087385dc489cda281"
+  integrity sha512-waItp+G1oyXAfljWSQz1Ba6wladIoi5t8bJdKR61/MjsEMS8ar7RqXZlYtwg2jdCa7DgP5Bm30g5xpAhhBdo/w==
+
 qs@6.10.3:
   version "6.10.3"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.10.3.tgz#d6cde1b2ffca87b5aa57889816c5f81535e22e8e"

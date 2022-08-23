@@ -14,6 +14,7 @@ import * as play from './views/play.html.js';
 import * as rating from './views/rating.html.js';
 import * as admin from './views/admin.html.js';
 import * as questCreate from './views/questCreate.html.js';
+import * as questPage from './views/questPage.html.js';
 import * as questEdit from './views/questEdit.html.js';
 import * as myQuests from './views/myQuests.html.js';
 import * as branchEdit from './views/branchEdit.html.js';
@@ -93,6 +94,12 @@ export default class App {
                 urlRegex: /^\/quest-create$/,
                 title: `${this.name} | Создать квест`,
                 handler: questCreate.handler,
+                authRequired: true
+            },
+            {
+                urlRegex: /^\/quest\?.*$/,
+                title: `${this.name} | Квест`,
+                handler: questPage.handler,
                 authRequired: true
             },
             {

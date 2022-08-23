@@ -18,7 +18,7 @@ const html = `
         </div>
         <div id="description-fields">
             <label class="text-big">Описание <span id="description-error"></span></label>
-            <textarea id="description-input" class="text scrollable"></textarea>
+            <textarea id="description-input" class="text scrollable" rows="5"></textarea>
         </div>
         <div id="branches-fields">
             <label class="text-big">Ветки <span id="branches-error"></span></label>

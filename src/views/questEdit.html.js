@@ -1,6 +1,8 @@
 import {$, forEachChild, setTimedClass} from "../modules/utils.ts";
 import Handlebars from 'handlebars/dist/cjs/handlebars';
-import {closeRoll, fastRoll, isClosedRoll, openRoll} from "../modules/show-hide";
+import {closeRoll, fastRoll, openRoll} from "../modules/show-hide";
+import {BASE_URL_PART} from "../constants";
+import qrcode from "qrcode-generator-es6";
 
 
 const html = `
@@ -23,7 +25,7 @@ const html = `
         </div>
         <div id="description-fields">
             <label class="text-big">Описание <span id="description-error"></span></label>
-            <textarea id="description-input" class="text scrollable"></textarea>
+            <textarea id="description-input" class="text scrollable" rows="5"></textarea>
         </div>
         <div id="branches-fields">
             <label class="text-big">Ветки <span id="branches-error"></span></label>
@@ -52,10 +54,28 @@ const html = `
         <div id="published-fields">
             <label class="text-big">Опубликован <span id="published-error"></span></label>
             <input id="published-input" type="checkbox" class="switch">
-                <div class="info text-small">
-                    Если не опубликован - это черновик. Никто кроме тебя не сможет просматривать квест<br>
-                    Перед публикацией квест будет проверен модераторами
-                </div>
+            <div class="info text-small">
+                Если не опубликован - это черновик. Никто кроме тебя и соавторов не сможет просматривать квест <br>
+                Но доступ к нему можно будет получить по ссылке, если включена опция ниже
+            </div>
+        </div>
+        <div id="link-access-fields">
+            <label class="text-big">Доступ по ссылке (или QR-коду) <span id="link-access-error"></span></label>
+            <input id="link-access-input" type="checkbox" class="switch">
+            <div class="info text-small">
+                Получить доступ к квесту можно будет по ссылке или QR. <br>
+                Удобно, если нужно дать квест человеку, ещё не имеющему аккаунт на сайте.
+            </div>
+            <div id="link-access-on-fields" class="text-big roll-closed">
+                <span>Ссылка на квест:</span>
+                <a id="link-access-link" target="_blank" href="">Rfrfz-nj ccskrf</a>
+                <span id="button-copy-link" class="button rounded link-button">
+                    <img src="${BASE_URL_PART}/images/link.svg" alt="copy" class="link-image">
+                </span>
+                <br>
+                <span>Ссылка в виде QR:</span>
+                <div id="qr-code-image"></div>
+            </div>
         </div>
     </div>
 
@@ -104,6 +124,8 @@ export async function handler(element, app) {
     element.innerHTML = html;
     const searchParams = new URL(window.location.href).searchParams;
     const questId = searchParams.get('questId');
+    let questUid;
+    let accessLink;
 
     const form = $("data-edit-form");
     const questInfo = $("quest-info");
@@ -113,10 +135,13 @@ export async function handler(element, app) {
     const permissionsFields = $("permissions-fields");
     const helpersFields = $("helpers-fields");
     const publishedFields = $("published-fields");
+    const linkAccessFields = $("link-access-fields");
+    const linkAccessOnFields = $("link-access-on-fields");
 
     const titleInput = $("title-input");
     const descriptionInput = $("description-input");
     const publishedInput = $("published-input");
+    const linkAccessInput = $("link-access-input");
 
     const titleError = $("title-error");
     const descriptionError = $("description-error");
@@ -129,6 +154,10 @@ export async function handler(element, app) {
     const newHelperButton = $("helpers-button-new");
     const saveButton = $("save-button");
     const deleteButton = $("delete-button");
+    const copyLinkButton = $("button-copy-link");
+
+    const qrCodeImage = $("qr-code-image")
+    const accessLinkEl = $("link-access-link")
 
     form.oninput = () => window.onbeforeunload = () => true;
     app.actions.ongoto = () => window.onbeforeunload = () => null;
@@ -146,6 +175,10 @@ export async function handler(element, app) {
     titleInput.value = questData.title;
     descriptionInput.value = questData.description;
     publishedInput.checked = questData.ispublished;
+    linkAccessInput.checked = questData.islinkactive;
+    if (questData.islinkactive) {
+        generateQR();
+    }
 
     // --- get existing branches
     response = await app.apiGet(`/branch?questId=${questId}`);
@@ -340,6 +373,38 @@ export async function handler(element, app) {
     });
     }
 
+    // click on "link access"
+    linkAccessInput.addEventListener('click', generateQR);
+    async function generateQR() {
+        if (linkAccessInput.checked) {
+            if (questUid === undefined) {
+                const response = await app.apiGet(`/quest/uid?id=${questId}`);
+                const questData = await response.json();
+                questUid = questData.uid;
+                console.log(questData)
+
+                accessLink = location.origin + `/quest?uid=${questUid}`;
+                accessLinkEl.innerText = accessLink;
+                accessLinkEl.setAttribute('href', accessLink);
+                const qr = new qrcode(0, 'H');
+                qr.addData(accessLink);
+                qr.make();
+                qrCodeImage.innerHTML = qr.createSvgTag({});
+            }
+            openRoll(linkAccessOnFields);
+        } else {
+            closeRoll(linkAccessOnFields);
+        }
+    }
+
+    // click on "copy link"
+    copyLinkButton.addEventListener('click', async () => {
+        if (accessLink === undefined)
+            return;
+        await navigator.clipboard.writeText(accessLink);
+        app.messages.success('Ссылка скопирована в буфер обмена');
+    });
+
     // save quest
     saveButton.addEventListener("click", async (event) => {
         event.preventDefault();
@@ -347,15 +412,16 @@ export async function handler(element, app) {
         const title = titleInput.value.trim();
         const description = descriptionInput.value.trim();
         const isPublished = publishedInput.checked;
+        const isLinkActive = linkAccessInput.checked;
 
-        const response = await app.apiPut("/quest", {id: questId, title, description, isPublished})
+        const response = await app.apiPut("/quest", {id: questId, title, description, isPublished, isLinkActive})
         const resp = await response.json();
         switch (response.status) {
             case 200:
-                setTimedClass([titleFields, descriptionFields, publishedFields], "success");
+                setTimedClass([titleFields, descriptionFields, publishedFields, linkAccessFields], "success");
                 break;
             case 401:
-                setTimedClass([titleFields, descriptionFields, publishedFields], "error");
+                setTimedClass([titleFields, descriptionFields, publishedFields, linkAccessFields], "error");
                 break;
             default:
                 app.messages.error(`Ошибка ${response.status}!`, resp.info);

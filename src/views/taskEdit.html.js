@@ -30,7 +30,7 @@ const html = `
             <label class="text-big">Описание <span id="description-error"></span></label>
             <div class="info text-small">Можно использовать Markdown-оформление, вставлять ссылки и загружать фото</div>
             <div class="absolute-wrapper">
-                <textarea id="description-input" class="text markdowned scrollable"></textarea>
+                <textarea id="description-input" class="text markdowned scrollable" rows="5"></textarea>
                 <div id="markdown-panel">
                     <div class="_bold">B</div>
                     <div class="_italic">I</div>

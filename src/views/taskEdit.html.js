@@ -265,6 +265,7 @@ export async function handler(element, app) {
 
     // scan existing qr
     const qrScanner = new QrScanner(qrCodeScanner, result => {
+        app.messages.success('QR отсканирован');
         qrScanner.stop();
         closeRoll(qrCodeScanner);
         answerLink = result.data;
@@ -272,7 +273,12 @@ export async function handler(element, app) {
     }, {highlightScanRegion: true});
     qrScanButton.addEventListener('click', () => {
         clearQR();
-        qrScanner.start();
+        qrScanner.start().then(
+          () => {},
+          (error) => {
+              app.modal.alert("Не предоставлены права доступа к камере", "Настройте доступ к камере для этого сайта в браузере");
+          }
+        );
         openRoll(qrCodeScanner);
     });
 

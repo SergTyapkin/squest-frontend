@@ -1,7 +1,8 @@
 import {$, setTimedClass} from "../modules/utils.ts";
-import {hide, show} from "../modules/show-hide.js";
+import {closeRoll, hide, hidefast, openRoll, show} from "../modules/show-hide.js";
 import {marked} from "marked/marked.min.js";
 import {HtmlSanitizer} from "@jitbit/htmlsanitizer";
+import QrScanner from "qr-scanner";
 
 const html = `
 <div id="back-button" class="title-container bg">
@@ -29,6 +30,19 @@ const html = `
     
     <div class="submit-container">
         <input type="submit" value="Ответить">
+    </div>
+</form>
+
+<form id="qr-answer" class="form centered-horizontal hidden">
+    <video id="qr-code-scanner" class="roll-active closed"></video>
+    <div id="qr-code-fields">
+        <div class="text-middle">Отсканировано: <span id="qr-code-text"></span></div>
+        <div class="info text-small">
+            Как только ты отсканируешь правильный QR-код, ты пройдёшь это задание           
+        </div>
+    </div>
+    <div class="flex-string">
+        <input id="qr-scan-button" type="button" value="Сканировать">
     </div>
 </form>
 
@@ -62,11 +76,17 @@ export async function handler(element, app) {
     element.innerHTML = html;
 
     const form =  $('form-answer');
+    const qrForm =  $('qr-answer');
     const formAnswerFields =  $('form-answer-fields');
     const questTitle = $("quest-title");
     const branchTitle = $("branch-title");
     const progressNumber = $("progress");
     const progressbar = $("progressbar");
+
+    const qrCodeFields = $("qr-code-fields");
+    const qrScanButton = $("qr-scan-button");
+    const qrCodeText = $("qr-code-text");
+    const qrCodeScanner = $("qr-code-scanner")
 
     const taskTitle = $("task-title");
     const taskDescription = $("task-description");
@@ -96,6 +116,10 @@ export async function handler(element, app) {
                 hide(form);
                 show(endButtons);
             }
+            if (res.isqranswer) {
+                hidefast(form);
+                show(qrForm);
+            }
             break;
         case 400:
             app.goto('/quests');
@@ -110,21 +134,28 @@ export async function handler(element, app) {
         event.preventDefault();
         const answer = answerInput.value.trim();
 
-        response = await app.apiPost("/task/play", {answer})
-        res = await response.json()
-
-        switch (response.status) {
-            case 200:
-                app.goto("/play");
-                break;
-            case 418:
-                setTimedClass([formAnswerFields], "error");
-                break;
-            default:
-                app.messages.error(`Ошибка ${response.status}!`, res.info);
-                break;
-        }
+        await checkAnswer(answer);
     });
+
+    async function checkAnswer(answer, callbackSuccess = () => {}, callbackError = () => {}) {
+      response = await app.apiPost("/task/play", {answer})
+      res = await response.json()
+
+      switch (response.status) {
+        case 200:
+          await callbackSuccess();
+          app.goto("/play");
+          break;
+        case 418:
+          await callbackError(418);
+          setTimedClass([formAnswerFields], "error");
+          break;
+        default:
+          await callbackError(null);
+          app.messages.error(`Ошибка ${response.status}!`, res.info);
+          break;
+      }
+    }
 
     restartButton.addEventListener('click', async () => {
         if (await app.modal.confirm("Точно начинаем заново?", "Рейтинг останется")) {
@@ -132,4 +163,44 @@ export async function handler(element, app) {
             app.goto('/play');
         }
     });
+
+  // scan existing qr
+  let answerLink;
+  const qrScanner = new QrScanner(qrCodeScanner, async (result) => {
+    const newRes = result.data;
+    if (newRes === answerLink) {
+      return;
+    }
+    answerLink = newRes;
+    qrCodeText.innerText = answerLink;
+
+    await checkAnswer(answerLink, () => {
+      app.messages.success('Правильно', 'QR отсканирован');
+      qrScanner.destroy();
+    }, (errCode) => {
+      if (errCode === 418)
+        app.messages.error('Неверно', 'QR не тот');
+      else
+        app.messages.error('Ошибка', 'Неизвестная ошибка');
+    });
+  }, {highlightScanRegion: true});
+  let isScan = false;
+  qrScanButton.addEventListener('click', () => {
+    if (!isScan) {
+      qrScanner.start().then(
+        () => {},
+        (error) => {
+          app.modal.alert("Не предоставлены права доступа к камере", "Настройте доступ к камере для этого сайта в браузере");
+        }
+      );
+      openRoll(qrCodeScanner);
+      qrScanButton.value = "Пока хватит";
+      isScan = true;
+      return;
+    }
+    qrScanner.stop();
+    closeRoll(qrCodeScanner);
+    qrScanButton.value = "Сканировать дальше";
+    isScan = false;
+  });
 }

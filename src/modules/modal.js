@@ -26,12 +26,12 @@ const modalHTML = `
     {{/if}}
        
     <div class="submit-container">
-        {{#if prompt }}
+        {{#unless confirm }}
             <input id="modal-submit-button" type="submit" value="Ок">
         {{else}}
             <span id="modal-submit-button" class="button rounded">Да</span>
             <span class="button rounded modal-close">Нет</span>
-        {{/if}}
+        {{/unless}}
     </div>
 </div>
 `;
@@ -41,13 +41,13 @@ export default class Modal {
         this.modalTemplate = Handlebars.compile(modalHTML);
     }
 
-    async __createModal(title, description = "", prompt = false) {
+    async __createModal(title, description = "", prompt = false, confirm = false, alert=true) {
         return new Promise((resolve) => {
             const background = document.createElement('div');
             background.classList.add('modal-background');
             const modal = document.createElement('div');
             modal.classList.add('modal');
-            modal.innerHTML = this.modalTemplate({title, description, prompt});
+            modal.innerHTML = this.modalTemplate({title, description, prompt, alert});
             background.appendChild(modal);
 
             const input = modal.querySelector('#modal-prompt-input');
@@ -75,10 +75,14 @@ export default class Modal {
     }
 
     async prompt(title, description) {
-        return this.__createModal(title, description, true);
+        return this.__createModal(title, description, true, false, false);
     }
 
     async confirm(title, description) {
-        return this.__createModal(title, description, false);
+        return this.__createModal(title, description, false, true, false);
+    }
+
+    async alert(title, description) {
+        return this.__createModal(title, description, false, false, true);
     }
 }

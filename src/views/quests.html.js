@@ -66,7 +66,7 @@ const questTemplate = Handlebars.compile(`
     </span>
     <span class="text choose">ВЫБРАТЬ<arrow class="arrow right"></arrow></span>
 </li>
-<ul class="roll-closed listing branches-listing">
+<ul class="listing branches-listing roll-active closed">
     <!--Branches will be there-->
 </ul>
 `);

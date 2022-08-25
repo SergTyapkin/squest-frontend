@@ -19,7 +19,15 @@
         opacity 1
 
 
-.roll-closed
+.roll-active
     transition height 0.3s ease
     overflow-y hidden
-    height 0 // js animable
+.roll-active.closed
+    height 0
+
+.simple-roll
+    transition max-height 0.3s ease
+    overflow-y hidden
+    max-height 1000px
+.simple-roll.closed
+    max-height 0

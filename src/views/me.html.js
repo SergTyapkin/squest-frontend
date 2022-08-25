@@ -42,7 +42,7 @@ const html = `
         </form>
         
         <form id="form-password">
-            <div id="form-password-fields" class="fields-container roll-closed">
+            <div id="form-password-fields" class="fields-container roll-active closed">
                 <div id="password-error" class="error-info text-middle"></div>
                 <div id="old-password-fields">
                     <div class="info text-small" id="old-password-result-info"></div>

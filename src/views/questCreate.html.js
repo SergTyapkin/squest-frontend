@@ -1,6 +1,6 @@
 import {$, forEachChild, setTimedClass} from '../modules/utils';
 import Handlebars from 'handlebars/dist/cjs/handlebars';
-import {fastRoll, openRoll} from "../modules/show-hide";
+import {fastRoll, openRoll, openRollList} from "../modules/show-hide";
 
 const html = `
 <div class="title-container bg">
@@ -22,7 +22,7 @@ const html = `
         </div>
         <div id="branches-fields">
             <label class="text-big">Ветки <span id="branches-error"></span></label>
-            <ul id="branches-list" class="addable-list roll-closed">
+            <ul id="branches-list" class="addable-list roll-active closed">
                 <!-- Branches will be there -->
             </ul>
             <input id="branches-button-new" type="button" value="Добавить ветку">
@@ -30,7 +30,7 @@ const html = `
         <div id="permissions-fields">
             <label class="text-big">Права доступа <span id="branches-error"></span></label>
             <div class="info text-small">Белый список - те, кому разрешен просмотр квеста. Черный - кому запрещён. Черный не имеет значения, если есть белый</div>
-            <ul id="permissions-list" class="addable-list roll-closed">
+            <ul id="permissions-list" class="addable-list roll-active closed">
                 <!-- Permissions will be there -->
             </ul>
             <input id="permissions-button-new" type="button" value="Добавить пользователя">
@@ -121,7 +121,7 @@ export function handler(element, app) {
             fastRoll(permList);
         });
 
-        openRoll(permList);
+        openRollList(permList);
     });
 
 

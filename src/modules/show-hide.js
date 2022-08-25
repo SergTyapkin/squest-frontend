@@ -33,11 +33,22 @@ export function isClosedRoll(element) {
 }
 export function closeRoll(element) {
     element.removeAttribute('data-open-roll');
-    element.style.removeProperty("height");
+    element.style.height = element.scrollHeight + "px";
+    element.classList.add('closed');
+    setTimeout(() => {
+        element.style.removeProperty('height');
+    }, 20);
+}
+export function freezeHeight(element) {
+    element.style.height = element.scrollHeight + "px";
 }
 export function openRoll(element) {
     element.setAttribute('data-open-roll', '');
     element.style.height = element.scrollHeight + "px";
+    setTimeout(() => {
+        element.style.removeProperty('height');
+        element.classList.remove('closed');
+    }, 300)
 }
 export function fastRoll(element) {
     element.setAttribute('data-open-roll', '');
@@ -46,4 +57,14 @@ export function fastRoll(element) {
     element.style.height = 'auto';
     element.style.height = element.scrollHeight + "px";
     element.style.transition = buffer;
+}
+
+
+export function closeRollList(element) {
+    element.removeAttribute('data-open-roll');
+    element.style.removeProperty("height");
+}
+export function openRollList(element) {
+    element.setAttribute('data-open-roll', '');
+    element.style.height = element.scrollHeight + "px";
 }

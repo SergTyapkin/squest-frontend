@@ -1,6 +1,6 @@
 import {$, forEachChild, setTimedClass} from "../modules/utils.ts";
 import Handlebars from 'handlebars/dist/cjs/handlebars';
-import {closeRoll, fastRoll, openRoll} from "../modules/show-hide";
+import {closeRoll, fastRoll, openRoll, openRollList} from "../modules/show-hide";
 import {BASE_URL_PART} from "../constants";
 import qrcode from "qrcode-generator-es6";
 
@@ -30,7 +30,7 @@ const html = `
         <div id="branches-fields">
             <label class="text-big">Ветки <span id="branches-error"></span></label>
             <div class="info text-small">При просмотре квестов для игры вы будете видеть даже неопубликованные ветки, чтобы можно было поиграть и проверить ветку до её публикации</div>
-            <ul id="branches-list" class="addable-list roll-closed">
+            <ul id="branches-list" class="addable-list roll-active closed">
                 <!-- Branches will be there -->
             </ul>
             <input id="branches-button-new" type="button" value="Добавить ветку">
@@ -38,7 +38,7 @@ const html = `
         <div id="permissions-fields">
             <label class="text-big">Права доступа <span id="permissions-error"></span></label>
             <div class="info text-small">Белый список - те, кому разрешен просмотр квеста. Черный - кому запрещён. Черный не имеет значения, если есть белый</div>
-            <ul id="permissions-list" class="addable-list roll-closed">
+            <ul id="permissions-list" class="addable-list roll-active closed">
                 <!-- Permissions will be there -->
             </ul>
             <input id="permissions-button-new" type="button" value="Добавить пользователя">
@@ -46,7 +46,7 @@ const html = `
         <div id="helpers-fields">
             <label class="text-big">Соавторы <span id="helpers-error"></span></label>
             <div class="info text-small">Хотите делать квест вместе? Просто добавьте никнеймы соавторов ниже и они получат доступ к редактированию квеста</div>
-            <ul id="helpers-list" class="addable-list roll-closed">
+            <ul id="helpers-list" class="addable-list roll-active closed">
                 <!-- Helpers will be there -->
             </ul>
             <input id="helpers-button-new" type="button" value="Добавить соавтора">
@@ -66,7 +66,7 @@ const html = `
                 Получить доступ к квесту можно будет по ссылке или QR. <br>
                 Удобно, если нужно дать квест человеку, ещё не имеющему аккаунт на сайте.
             </div>
-            <div id="link-access-on-fields" class="text-big roll-closed">
+            <div id="link-access-on-fields" class="text-big roll-active closed">
                 <span>Ссылка на квест:</span>
                 <a id="link-access-link" target="_blank" href="">Rfrfz-nj ccskrf</a>
                 <span id="button-copy-link" class="button rounded link-button">
@@ -223,7 +223,7 @@ export async function handler(element, app) {
             branchesList.insertBefore(branchFields.nextSibling, branchFields);
         });
     });
-    openRoll(branchesList);
+    openRollList(branchesList);
 
     // --- get existing permissions
     response = await app.apiGet(`/quest/privacy?questId=${questId}`);
@@ -248,7 +248,7 @@ export async function handler(element, app) {
             fastRoll(permList);
         });
     });
-    openRoll(permList);
+    openRollList(permList);
 
     // --- get existing helpers
     if (!helperMode) {
@@ -272,7 +272,7 @@ export async function handler(element, app) {
             fastRoll(helpersList);
         });
     });
-    openRoll(helpersList);
+    openRollList(helpersList);
     }
 
 
@@ -324,7 +324,7 @@ export async function handler(element, app) {
             nextOrderidEl.innerText = curOrderid;
             branchesList.insertBefore(branchFields.nextSibling, branchFields);
         });
-        openRoll(branchesList);
+        openRollList(branchesList);
     });
 
     // click on "new permission"
@@ -346,7 +346,7 @@ export async function handler(element, app) {
             permFields.remove();
             fastRoll(permList);
         });
-        openRoll(permList);
+        openRollList(permList);
     });
 
     // click on "new helper"
@@ -369,7 +369,7 @@ export async function handler(element, app) {
             helpersFields.remove();
             fastRoll(helpersList);
         });
-        openRoll(helpersList);
+        openRollList(helpersList);
     });
     }
 

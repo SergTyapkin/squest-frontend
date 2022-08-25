@@ -1,6 +1,6 @@
 import {$, forEachChild, setTimedClass} from "../modules/utils.ts";
 import Handlebars from 'handlebars/dist/cjs/handlebars';
-import {closeRoll, fastRoll, isClosedRoll, openRoll} from "../modules/show-hide";
+import {closeRoll, fastRoll, isClosedRoll, openRoll, openRollList} from "../modules/show-hide";
 
 
 const html = `
@@ -31,7 +31,7 @@ const html = `
         <div id="tasks-fields">
             <label class="text-big">Задания <span id="tasks-error"></span></label>
             <div class="info text-small">Последнее задание в ветке выводится игроку без вопроса - это страница с поздравлением </div>
-            <ul id="tasks-list" class="addable-list roll-closed">
+            <ul id="tasks-list" class="addable-list roll-active closed">
                 <!-- tasks will be there -->
             </ul>
             <input id="tasks-button-new" type="button" value="Добавить задание">
@@ -160,7 +160,7 @@ export async function handler(element, app) {
             tasksList.insertBefore(taskFields.nextSibling, taskFields);
         });
     });
-    openRoll(tasksList);
+    openRollList(tasksList);
 
 
     // click on "new task"
@@ -216,7 +216,7 @@ export async function handler(element, app) {
             nextOrderidEl.innerText = curOrderid;
             tasksList.insertBefore(taskFields.nextSibling, taskFields);
         });
-        openRoll(tasksList);
+        openRollList(tasksList);
     });
 
 

@@ -1,6 +1,6 @@
 import {$, forEachChild, setTimedClass} from "../modules/utils.ts";
 import Handlebars from 'handlebars/dist/cjs/handlebars.js';
-import {fastRoll, openRoll} from "../modules/show-hide";
+import {closeRoll, fastRoll, openRoll, openRollList} from "../modules/show-hide";
 import {marked} from "marked/marked.min.js";
 import {HtmlSanitizer} from "@jitbit/htmlsanitizer";
 import MarkdownRedactor from "../components/markdown-redactor";
@@ -54,15 +54,32 @@ const html = `
             <textarea id="question-input" class="text"></textarea>
         </div>
         <div id="answers-fields">
-            <label class="text-big">Правильные ответы <span id="answers-error"></span></label>
-            <div class="info text-small">
-                РегИсТр ответов не играет роли. Все ответы игроков перед проверкой переводятся в нижний регистр <br>
-                Чтобы любой ответ, введенный игроком, считался правильным, добавьте ответ "*"
+            <div id="qr-switch-fields">
+                <label class="text-big">QR-ответ <span id="qr-switch-error"></span></label>
+                <input id="qr-switch-input" type="checkbox" class="switch">
+                <div class="info text-small">
+                    Ответом можно сделать <b>ЛЮБОЙ</b> QR-код вместо текстового ответа. Даже уже существующий и не твой
+                </div>
             </div>
-            <ul id="answers-list" class="addable-list roll-closed">
-                <!-- answers will be there -->
-            </ul>
-            <input id="answers-button-new" type="button" value="Добавить ответ">
+            <div id="text-answers-fields" class="roll-active">
+                <label class="text-big">Правильные ответы <span id="text-answers-error"></span></label>
+                <div class="info text-small">
+                    РегИсТр ответов не играет роли. Все ответы игроков перед проверкой переводятся в нижний регистр <br>
+                    Чтобы любой ответ, введенный игроком, считался правильным, добавьте ответ "*"
+                </div>
+                <ul id="answers-list" class="addable-list roll-active closed">
+                    <!-- answers will be there -->
+                </ul>
+                <input id="answers-button-new" type="button" value="Добавить ответ">
+            </div>
+            <div id="qr-answer-fields" class="roll-active">
+                <label class="text-big">Правильный QR <span id="qr-answer-error"></span></label>
+                <div class="info text-small">
+                    Чтобы сделать ответом ЛЮБОЙ существующий QR, Просто отсканируй его ниже. <br>
+                    Либо, если такого QR ещё нет - можно сгенерировать новый QR ниже. <br>
+                    Игроку для прохождения этапа нужно будет отсканировать его через сканер внутри сайта на странице с вопросом</div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -89,17 +106,23 @@ export async function handler(element, app) {
     const titleFields = $("title-fields");
     const descriptionFields = $("description-fields");
     const questionFields = $("question-fields");
-    const answersFields = $("answers-fields");
+    const qrSwitchFields = $("qr-switch-fields");
+    const textAnswersFields = $("text-answers-fields");
+    const qrAnswerFields = $("qr-answer-fields");
 
     const titleInput = $("title-input");
     const descriptionInput = $("description-input");
     const questionInput = $("question-input");
+    const qrSwitchInput = $("qr-switch-input");
     const descriptionPreview = $("description-preview");
 
     const titleError = $("title-error");
     const descriptionError = $("description-error");
     const questionError = $("question-error");
     const descriptionPreviewError = $("description-preview-error");
+    const textAnswersError = $("text-answers-error");
+    const qrAnswerError = $("qr-answer-error");
+    const qrSwitchError = $("qr-switch-error");
 
     const newAnswerButton = $("answers-button-new");
     const answersList = $("answers-list");
@@ -124,6 +147,13 @@ export async function handler(element, app) {
     descriptionInput.style.height = Math.min(descriptionInput.scrollHeight + 30, 1000) + "px";
     questionInput.value = res.question;
     branchTitleEl.innerText = '\"' + res.btitle + '\"';
+    if (res.isqranswer) {
+        openRoll(qrAnswerFields);
+        closeRoll(textAnswersFields);
+    } else {
+        openRoll(textAnswersFields);
+        closeRoll(qrAnswerFields);
+    }
     backButton.addEventListener('click', async () => {
         app.goto(`/branch-edit?branchId=${res.branchid}`);
     });
@@ -161,7 +191,7 @@ export async function handler(element, app) {
             answerFields.remove();
             fastRoll(answersList);
         });
-        openRoll(answersList);
+        openRollList(answersList);
     });
 
     // save task
@@ -189,5 +219,17 @@ export async function handler(element, app) {
         }
 
         window.onbeforeunload = () => null;
+    });
+
+    // switch qr answer
+    qrSwitchInput.addEventListener('click', () => {
+        if (qrSwitchInput.checked) {
+            openRoll(qrAnswerFields);
+            closeRoll(textAnswersFields);
+            return;
+        }
+
+        closeRoll(qrAnswerFields);
+        openRoll(textAnswersFields);
     });
 }

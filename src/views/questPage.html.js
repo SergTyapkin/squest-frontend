@@ -1,6 +1,6 @@
 import { $ } from "../modules/utils.ts";
 import Handlebars from 'handlebars/dist/cjs/handlebars';
-import {closeRoll, isClosedRoll, openRoll} from "../modules/show-hide";
+import {closeRoll, isClosedRoll, openRoll, openRollList} from "../modules/show-hide";
 import {BASE_URL_PART} from "../constants";
 
 const html = `
@@ -22,7 +22,7 @@ const html = `
             <div class="text-big">Ветки:
             </div>
         </div>
-        <ul id="listing" class="roll-closed listing branches-listing">
+        <ul id="listing" class="listing branches-listing roll-active closed">
             <!--Branches will be there-->
         </ul>
     </div>
@@ -76,7 +76,7 @@ export async function handler(element, app) {
 
         listing.innerHTML += branchTemplate(res);
     }
-    openRoll(listing);
+    openRollList(listing);
 
     listing.querySelectorAll("*[data-branch-button]").forEach((branchButton) => {
         branchButton.addEventListener("click", async (event) => {

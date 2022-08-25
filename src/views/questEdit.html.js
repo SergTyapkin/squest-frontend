@@ -382,7 +382,7 @@ export async function handler(element, app) {
                 const questData = await response.json();
                 questUid = questData.uid;
 
-                accessLink = `${location.origin}${BASE_URL_PART}/quest?uid=${questUid}`;
+                accessLink = `${location.hosta}${BASE_URL_PART}/quest?uid=${questUid}`;
                 accessLinkEl.innerText = accessLink;
                 accessLinkEl.setAttribute('href', accessLink);
                 const qr = new qrcode(0, 'H');

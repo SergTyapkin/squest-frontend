@@ -13,7 +13,8 @@ export default {
         sourcemap: true,
         file: 'build/bundle.min.js',
         format: 'es',
-        assetFileNames: 'assets/[name][hash][extname]'
+        assetFileNames: 'assets/[name][hash][extname]',
+        inlineDynamicImports: true
     },
     plugins: [
         typescript({

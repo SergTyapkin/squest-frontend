@@ -94,6 +94,11 @@ export function setTimedClass(elements: Array<HTMLElement>, className: string, t
             timeout: setTimeout(() => element.classList.remove(className), timeout)
         });
     });
+}
 
 
+export function generateUid(len: number) {
+    const arr = new Uint8Array((len || 40) / 2);
+    window.crypto.getRandomValues(arr);
+    return Array.from(arr, (dec) => dec.toString(16).padStart(2, "0")).join('');
 }

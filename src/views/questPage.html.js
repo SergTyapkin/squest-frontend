@@ -7,9 +7,9 @@ const html = `
 <div class="quests-page">
     <div id="details-block">
         <div id="back-button" class="title-container clickable low-opacity">
-            <div>
+            <linkbutton href="/quests">
                 <span class="text-big-x"><arrow class="arrow left"></arrow>К списку квестов</span>
-            </div>
+            </linkbutton>
         </div>
         <div class="info-plate">
             <div class="text-big">Квест:
@@ -96,9 +96,5 @@ export async function handler(element, app) {
                 app.goto('/play');
             }
         });
-    });
-
-    $("back-button").addEventListener("click", (event) => {
-        app.goto('/quests');
     });
 }

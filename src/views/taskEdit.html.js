@@ -4,6 +4,10 @@ import {closeRoll, fastRoll, openRoll, openRollList} from "../modules/show-hide"
 import {marked} from "marked/marked.min.js";
 import {HtmlSanitizer} from "@jitbit/htmlsanitizer";
 import MarkdownRedactor from "../components/markdown-redactor";
+import qrcode from "qrcode-generator-es6";
+import {BASE_URL_PART} from "../constants";
+import {generateUid} from "../modules/utils"
+import QrScanner from "qr-scanner";
 
 const html = `
 <div id="back-button" class="title-container clickable low-opacity">
@@ -73,11 +77,24 @@ const html = `
                 <input id="answers-button-new" type="button" value="Добавить ответ">
             </div>
             <div id="qr-answer-fields" class="roll-active">
-                <label class="text-big">Правильный QR <span id="qr-answer-error"></span></label>
+                <label class="text-big">Правильный ответ <span id="qr-answer-error"></span></label>
                 <div class="info text-small">
                     Чтобы сделать ответом ЛЮБОЙ существующий QR, Просто отсканируй его ниже. <br>
                     Либо, если такого QR ещё нет - можно сгенерировать новый QR ниже. <br>
-                    Игроку для прохождения этапа нужно будет отсканировать его через сканер внутри сайта на странице с вопросом</div>
+                    Игроку для прохождения этапа нужно будет отсканировать его через сканер внутри сайта на странице с вопросом
+                </div>
+                <video id="qr-code-scanner" class="roll-active closed"></video>
+                <div id="qr-code-fields">
+                    <div class="text-middle">Результат: <span id="qr-code-text"></span></div>
+                    <div id="qr-code-image"></div>
+                    <div class="info text-small">
+                        Сгенерированный выше QR может отличаться от того, что ты только что отсканировал камерой (если ты сканировал QR камерой). <br>
+                        Всё в порядке. Для прохождения этапа можно отсканировать и оригинальный QR, и этот
+                    </div>
+                </div>
+                <div class="flex-string">
+                    <input id="qr-scan-button" type="button" value="Сканировать QR">
+                    <input id="qr-gen-button" type="button" value="Создать QR">
                 </div>
             </div>
         </div>
@@ -101,6 +118,7 @@ export async function handler(element, app) {
     element.innerHTML = html;
     const searchParams = new URL(window.location.href).searchParams;
     const taskId = searchParams.get('taskId');
+    let answerLink;
 
     const form = $("data-edit-form");
     const titleFields = $("title-fields");
@@ -109,12 +127,17 @@ export async function handler(element, app) {
     const qrSwitchFields = $("qr-switch-fields");
     const textAnswersFields = $("text-answers-fields");
     const qrAnswerFields = $("qr-answer-fields");
+    const qrCodeFields = $("qr-code-fields");
 
     const titleInput = $("title-input");
     const descriptionInput = $("description-input");
     const questionInput = $("question-input");
     const qrSwitchInput = $("qr-switch-input");
+    const qrScanButton = $("qr-scan-button");
+    const qrGenButton = $("qr-gen-button");
+
     const descriptionPreview = $("description-preview");
+    const qrCodeText = $("qr-code-text");
 
     const titleError = $("title-error");
     const descriptionError = $("description-error");
@@ -126,6 +149,9 @@ export async function handler(element, app) {
 
     const newAnswerButton = $("answers-button-new");
     const answersList = $("answers-list");
+
+    const qrCodeImage = $("qr-code-image")
+    const qrCodeScanner = $("qr-code-scanner")
 
     const backButton = $("back-button");
     const saveButton = $("save-button");
@@ -147,13 +173,6 @@ export async function handler(element, app) {
     descriptionInput.style.height = Math.min(descriptionInput.scrollHeight + 30, 1000) + "px";
     questionInput.value = res.question;
     branchTitleEl.innerText = '\"' + res.btitle + '\"';
-    if (res.isqranswer) {
-        openRoll(qrAnswerFields);
-        closeRoll(textAnswersFields);
-    } else {
-        openRoll(textAnswersFields);
-        closeRoll(qrAnswerFields);
-    }
     backButton.addEventListener('click', async () => {
         app.goto(`/branch-edit?branchId=${res.branchid}`);
     });
@@ -201,17 +220,26 @@ export async function handler(element, app) {
         const title = titleInput.value.trim();
         const description = descriptionInput.value;
         const question = questionInput.value;
+        const isQrAnswer = qrSwitchInput.checked;
         const answers = [];
-        forEachChild(answersList, (el) => {answers.push(el.lastElementChild.value)});
+        if (!qrSwitchInput.checked) {
+            forEachChild(answersList, (el) => {answers.push(el.lastElementChild.value)});
+        } else {
+            if (!answerLink) {
+                app.messages.error('QR код ответа не назначен');
+                return;
+            }
+            answers.push(answerLink);
+        }
 
-        const response = await app.apiPut("/task", {id: taskId, title, description, question, answers})
+        const response = await app.apiPut("/task", {id: taskId, title, description, question, answers, isQrAnswer})
         const resp = await response.json();
         switch (response.status) {
             case 200:
-                setTimedClass([titleFields, descriptionFields, questionFields, answersFields], "success");
+                setTimedClass([titleFields, descriptionFields, questionFields, textAnswersFields, qrAnswerFields], "success");
                 break;
             case 401:
-                setTimedClass([titleFields, descriptionFields, questionFields, answersFields], "error");
+                setTimedClass([titleFields, descriptionFields, questionFields, textAnswersFields, qrAnswerFields], "error");
                 break;
             default:
                 app.messages.error(`Ошибка ${response.status}!`, resp.info);
@@ -230,6 +258,54 @@ export async function handler(element, app) {
         }
 
         closeRoll(qrAnswerFields);
+        qrScanner.stop();
+        closeRoll(qrCodeScanner);
         openRoll(textAnswersFields);
     });
+
+    // scan existing qr
+    const qrScanner = new QrScanner(qrCodeScanner, result => {
+        qrScanner.stop();
+        closeRoll(qrCodeScanner);
+        answerLink = result.data;
+        updateQR();
+    }, {highlightScanRegion: true});
+    qrScanButton.addEventListener('click', () => {
+        clearQR();
+        qrScanner.start();
+        openRoll(qrCodeScanner);
+    });
+
+    // generate qr
+    let qr;
+    function clearQR() {
+        qrCodeText.innerText = '';
+        qrCodeImage.innerHTML = '';
+    }
+    function updateQR() {
+        qrCodeText.innerText = answerLink;
+
+        qr = new qrcode(0, 'H');
+        qr.addData(answerLink);
+        qr.make();
+        qrCodeImage.innerHTML = qr.createSvgTag({});
+    }
+    qrGenButton.addEventListener('click', () => {
+        answerLink = `${location.host}${BASE_URL_PART}/found_qr?data=${generateUid(10)}`;
+        qrScanner.stop();
+        closeRoll(qrCodeScanner);
+        updateQR();
+    });
+
+    // Show existing qr after all actions
+    if (res.isqranswer) {
+        qrSwitchInput.checked = true;
+        answerLink = res.answers[0];
+        updateQR();
+        openRoll(qrAnswerFields);
+        closeRoll(textAnswersFields);
+    } else {
+        openRoll(textAnswersFields);
+        closeRoll(qrAnswerFields);
+    }
 }

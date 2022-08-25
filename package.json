@@ -15,6 +15,7 @@
     "@korolion/get-image-as-dataurl": "^0.2.0",
     "handlebars": "^4.7.7",
     "marked": "^4.0.12",
+    "qr-scanner": "^1.4.1",
     "qrcode-generator-es6": "^1.1.4"
   },
   "devDependencies": {

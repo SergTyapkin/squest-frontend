@@ -19,6 +19,7 @@ import * as questEdit from './views/questEdit.html.js';
 import * as myQuests from './views/myQuests.html.js';
 import * as branchEdit from './views/branchEdit.html.js';
 import * as taskEdit from './views/taskEdit.html.js';
+import * as foundQR from './views/foundQR.html.js';
 import {BASE_URL_PART, PATH_BASE_PART, DEFAULT_AVATAR_URL, DEFAULT_BACKGROUND} from "./constants.js";
 
 export default class App {
@@ -131,6 +132,12 @@ export default class App {
                 title: `${this.name} | Админ`,
                 handler: admin.handler,
                 authRequired: true
+            },
+            {
+                urlRegex: /^\/found_qr\?.*$/,
+                title: `${this.name} | Найден QR`,
+                handler: foundQR.handler,
+                authRequired: false
             },
             {
                 urlRegex: /^\/.*$/,

@@ -2,14 +2,15 @@ import { defineConfig, loadEnv } from 'vite';
 import pluginVue from '@vitejs/plugin-vue';
 import pluginBasicSsl from '@vitejs/plugin-basic-ssl';
 import path from 'path';
-import pluginStylelint from 'vite-plugin-stylelint';
 import { VitePWA as pluginVitePWA } from 'vite-plugin-pwa';
 import { viteStaticCopy as pluginViteStaticCopy } from 'vite-plugin-static-copy';
 import pluginSitemap from 'vite-plugin-sitemap';
+import pluginAutoprefixer from 'autoprefixer';
 import routes from './src/routes';
 import pluginTsCompileServiceWorker from './src/serviceWorker/pluginTsCompileServiceWorker';
 import pluginAssetsInserter from './src/serviceWorker/pluginAssetsListGenerator';
 import pluginDynamicImport from 'vite-plugin-dynamic-import';
+import pluginOpenGraph from 'vite-plugin-open-graph';
 
 const pluginPrettier = () => ({ name: 'prettier' });
 
@@ -24,9 +25,11 @@ export default defineConfig(({ mode }: { command: 'build' | 'serve'; mode: 'deve
       }),
       pluginDynamicImport(),
       pluginPrettier(),
-      pluginStylelint(),
       pluginViteStaticCopy({
-        targets: [{ src: 'static/favicon.ico', dest: 'static' }],
+        targets: [
+          { src: 'static/favicon.ico', dest: 'static' },
+          { src: 'static/open-graph-preview.png', dest: 'static' },
+        ],
       }),
       pluginSitemap({
         hostname: `${/true/i.test(env.VITE_HTTPS) ? 'https' : 'http'}://${env.VITE_DEPLOY_HOSTNAME}`,
@@ -75,11 +78,31 @@ export default defineConfig(({ mode }: { command: 'build' | 'serve'; mode: 'deve
           ],
         },
       }),
+      pluginOpenGraph({
+        basic: {
+          title: 'SQuest quest platform',
+          siteName: 'SQuest',
+          description: 'Басплатная платформа для простого создания и приятного прохождения онлайн-квестов',
+          type: 'image/png',
+          url: `${env.VITE_HTTPS === 'true' ? 'https' : 'http'}://${env.VITE_DEPLOY_HOSTNAME}`,
+          image: `${env.VITE_HTTPS === 'true' ? 'https' : 'http'}://${env.VITE_DEPLOY_HOSTNAME}/static/open-graph-preview.png`,
+          determiner: 'auto',
+          locale: 'ru_RU',
+          localeAlternate: ['en_EN', 'es_ES'],
+        }
+      }),
       pluginAssetsInserter({
         outBuildDir: 'dist',
         additionalDirs: ['static'],
       }),
     ].concat(/true/i.test(env.VITE_HTTPS) ? [pluginBasicSsl()] : []),
+    css: {
+      postcss: {
+        plugins: [
+          pluginAutoprefixer(),
+        ]
+      }
+    },
     define: {
       BUILD_TIMESTAMP: Date.now(),
       VERSION: JSON.stringify(import('./package.json').version),
@@ -118,7 +141,7 @@ export default defineConfig(({ mode }: { command: 'build' | 'serve'; mode: 'deve
       modulePreload: false,
       target: 'esnext',
       minify: true,
-      sourcemap: mode != 'production',
+      sourcemap: mode !== 'production',
       cssCodeSplit: false,
     },
   };

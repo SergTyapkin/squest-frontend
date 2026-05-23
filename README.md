@@ -1,4 +1,4 @@
-![GithubCI](https://github.com/sergtyapkin/vue-frontend-template/actions/workflows/deploy.yml/badge.svg)
+![GithubCI](https://github.com/sergtyapkin/vue-frontend-template/actions/workflows/deploy.yaml/badge.svg)
 
 # Фронтенд на Vue.js с авто-деплоем на _Nginx_ в докере и автоматическим получением сертификатов _Letsencrypt_
 
@@ -29,6 +29,24 @@
 9. **Stylelint** - линтер для Stylus
 10. **Husky/pre-commit** - инструменты для запуска линтеров перед каждым коммитом
 11. **Nginx/Docker/Make** - инструменты для запуска собранного приложения в выделенном контейнере
+
+#### Полный список команд Make:
+
+```SHELL
+make all  # Настроить env, установить докер, получить SSL-сертификаты, настроить автообновление сертификатов, запустить контейнер, настроить CI
+make update  # Обновить код до последней версии из ветки, собрать образ и перезапустить контейнер
+make build  # Собрать образ
+make run  # Перезапустить контейнер
+make down  # Остановить контейнер
+make logs  # Вывести логи в интерактивном режиме
+make generate-certs  # Получить SSL-сертификаты
+make renew-certs  # Обновить SSL-сертификаты
+make setup-ci  # Настроить CI, получить переменные для его настройки в Github
+make install-docker-if-not-exists  # Установить докер, если его ещё нет
+make set-docker-not-sudo  # Доавить текущего пользователя в группу docker, чтобы его можно было запускать без sudo
+make generate-docker-compose  # Сгенерировать docker-compose.yaml по конфигурации из .env
+make setup-env-file  # Создать .env, если его ещё нет, и открыть его в редакторе
+```
 
 ## Развертка для разработки
 

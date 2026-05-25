@@ -18,7 +18,7 @@
 </template>
 
 <script>
-import {draggedImageToBase64} from "~/utils/getImageAsDataURL";
+import {draggedImageToBase64} from "@sergtyapkin/image-uploader";
 
 export default {
   emits: ['load'],

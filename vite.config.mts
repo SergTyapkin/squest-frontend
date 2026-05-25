@@ -82,7 +82,7 @@ export default defineConfig(({ mode }: { command: 'build' | 'serve'; mode: 'deve
         basic: {
           title: 'SQuest quest platform',
           siteName: 'SQuest',
-          description: 'Басплатная платформа для простого создания и приятного прохождения онлайн-квестов',
+          description: 'Басплатная платформа для простого создания и прохождения онлайн-квестов',
           type: 'image/png',
           url: `${env.VITE_HTTPS === 'true' ? 'https' : 'http'}://${env.VITE_DEPLOY_HOSTNAME}`,
           image: `${env.VITE_HTTPS === 'true' ? 'https' : 'http'}://${env.VITE_DEPLOY_HOSTNAME}/static/open-graph-preview.png`,

@@ -37,47 +37,47 @@ export default defineConfig(({ mode }: { command: 'build' | 'serve'; mode: 'deve
         generateRobotsTxt: true,
       }),
       pluginTsCompileServiceWorker(),
-      pluginVitePWA({
-        strategies: 'injectManifest',
-        injectRegister: false,
-        injectManifest: {
-          injectionPoint: undefined,
-        },
-        srcDir: 'dist',
-        filename: 'sw.js',
+      // pluginVitePWA({
+      //   strategies: 'injectManifest',
+      //   injectRegister: false,
+      //   injectManifest: {
+      //     injectionPoint: undefined,
+      //   },
+      //   srcDir: 'dist',
+      //   filename: 'sw.js',
 
 
-        includeManifestIcons: true,
-        includeAssets: ['/static/favicon.ico'],
-        manifest: {
-          short_name: 'Frontend Template',
-          name: 'Frontend template with all best-practice instruments',
-          description: 'Some description of our service',
-          icons: [
-            {
-              src: '/static/favicon.ico',
-              sizes: '32x32',
-              type: 'image/png',
-              purpose: 'maskable',
-            },
-          ],
-          theme_color: '#181818',
-          background_color: '#181818',
-          display: 'standalone',
-          id: '/?source=pwa',
-          start_url: '/?source=pwa',
-          scope: '/',
-          prefer_related_applications: false,
-          shortcuts: [
-            {
-              name: 'Home',
-              short_name: 'Home',
-              description: 'Our base page',
-              url: '/?source=pwa',
-            },
-          ],
-        },
-      }),
+      //   includeManifestIcons: true,
+      //   includeAssets: ['/static/favicon.ico'],
+      //   manifest: {
+      //     short_name: 'Frontend Template',
+      //     name: 'Frontend template with all best-practice instruments',
+      //     description: 'Some description of our service',
+      //     icons: [
+      //       {
+      //         src: '/static/favicon.ico',
+      //         sizes: '32x32',
+      //         type: 'image/png',
+      //         purpose: 'maskable',
+      //       },
+      //     ],
+      //     theme_color: '#181818',
+      //     background_color: '#181818',
+      //     display: 'standalone',
+      //     id: '/?source=pwa',
+      //     start_url: '/?source=pwa',
+      //     scope: '/',
+      //     prefer_related_applications: false,
+      //     shortcuts: [
+      //       {
+      //         name: 'Home',
+      //         short_name: 'Home',
+      //         description: 'Our base page',
+      //         url: '/?source=pwa',
+      //       },
+      //     ],
+      //   },
+      // }),
       pluginOpenGraph({
         basic: {
           title: 'SQuest quest platform',

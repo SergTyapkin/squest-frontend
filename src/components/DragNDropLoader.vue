@@ -18,13 +18,13 @@
 </template>
 
 <script>
-import {getLoadedImageAsDataURL} from "~/utils/getImageAsDataURL";
+import {draggedImageToBase64} from "~/utils/getImageAsDataURL";
 
 export default {
   emits: ['load'],
 
   props: {
-    cropSize: {
+    cropToSquare: {
       type: Number,
       required: true,
     },
@@ -47,7 +47,7 @@ export default {
   methods: {
     async handleDrop(event) {
       this.isInDrag = false;
-      this.$emit('load', await getLoadedImageAsDataURL(event.dataTransfer, this.cropSize, this.compressSize, this.maxAllowedSize));
+      this.$emit('load', await draggedImageToBase64(event.dataTransfer, this.cropToSquare, this.compressSize, this.maxAllowedSize));
     }
   }
 };

@@ -138,7 +138,7 @@
             <DragNDropLoader
               class="image-loader"
               @load="async (dataUrl) => await updateImage(previewUrl, dataUrl, savePreview)"
-              :crop-size="cropSize"
+              :crop-to-square="cropToSquare"
               :compress-size="compressSize"
             >
               <div class="image-container" @click="updateImage(previewUrl, undefined, savePreview)">
@@ -247,7 +247,7 @@
             <DragNDropLoader
               class="image-loader"
               @load="async (dataUrl) => updateImage(backgroundImageUrl, dataUrl, saveBackground)"
-              :crop-size="cropSizeBackground"
+              :crop-to-square="cropToSquareBackground"
               :compress-size="compressSizeBackground"
             >
               <div class="image-container" @click="updateImage(backgroundImageUrl, undefined, saveBackground)">
@@ -334,12 +334,12 @@ export default {
 
   data() {
     return {
-      cropSize: null,
-      cropSizeBackground: null,
+      cropToSquare: false,
+      cropToSquareBackground: false,
       compressSize: IMAGE_MAX_RES,
       compressSizeBackground: IMAGE_QUEST_BACKGROUND_MAX_RES,
 
-      ImageUploader: new ImageUploader(this.$popups, this.$api.uploadImage, this.cropSize, this.compressSize),
+      ImageUploader: new ImageUploader(this.$popups, this.$api.uploadImage, this.cropToSquare, this.compressSize),
 
       prevBranches: [],
       prevHelpers: [],

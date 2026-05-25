@@ -147,7 +147,7 @@ hr
                 <DragNDropLoader
                   class="image-loader"
                   @load="updateAvatar"
-                  :crop-size="cropSize"
+                  :crop-to-square="cropToSquare"
                   :compress-size="compressSize"
                 >
                   <div class="avatar-div" @click.stop="updateAvatar(undefined)">
@@ -270,10 +270,10 @@ export default {
 
   data() {
     return {
-      cropSize: IMAGE_PROFILE_MAX_RES,
+      cropToSquare: false,
       compressSize: IMAGE_MAX_RES,
 
-      ImageUploader: new ImageUploader(this.$popups, this.$api.uploadImage, IMAGE_PROFILE_MAX_RES, IMAGE_MAX_RES),
+      ImageUploader: new ImageUploader(this.$popups, this.$api.uploadImage, this.cropToSquare, this.compressSize),
 
       username: '',
 

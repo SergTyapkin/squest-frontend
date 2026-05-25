@@ -1,22 +1,22 @@
-import getImageAsDataURL from "~/utils/getImageAsDataURL";
+import {loadImageInBase64} from '@sergtyapkin/image-uploader';
 
 export default class ImageUploader {
     popups = null;
-    cropSize = null;
+    cropToSquare = null;
     compressSize = null;
     apiUpload = (dataURL) => {};
 
-    constructor(popups, apiUpload, cropSize=null, compressSize=null) {
+    constructor(popups, apiUpload, cropToSquare=false, compressSize=null) {
         this.popups = popups
         this.apiUpload = apiUpload;
-        this.cropSize = cropSize;
+        this.cropToSquare = cropToSquare;
         this.compressSize = compressSize;
     }
 
     async getUserImage() {
         let dataURL;
         try {
-            dataURL = await getImageAsDataURL(this.cropSize, this.compressSize, undefined, Infinity);
+            dataURL = await loadImageInBase64(this.cropToSquare, this.compressSize, Infinity);
         } catch (err) {
             this.popups.error("Ошибка загрузки изображения", err.toString());
             throw err;

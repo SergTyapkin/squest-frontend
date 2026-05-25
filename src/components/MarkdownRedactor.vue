@@ -104,7 +104,7 @@ svg-stroke-width = 1px
     <DragNDropLoader
       class="image-loader"
       @load="attachPhoto"
-      :crop-size="cropSize"
+      :crop-to-square="cropToSquare"
       :compress-size="compressSize"
     >
       <textarea class="markdowned scrollable" ref="textarea" :rows="rows" v-model="modelValue" @input="updateVModel()" />
@@ -147,10 +147,10 @@ export default {
 
   data() {
     return {
-      cropSize: null,
+      cropToSquare: false,
       compressSize: IMAGE_MAX_RES,
 
-      ImageUploader: new ImageUploader(this.$popups, this.$api.uploadImage, this.cropSize, this.compressSize),
+      ImageUploader: new ImageUploader(this.$popups, this.$api.uploadImage, this.cropToSquare, this.compressSize),
 
       attachedImages: [],
       lastInputTime: Date.now(),

@@ -2,13 +2,13 @@ import { defineConfig, loadEnv } from 'vite';
 import pluginVue from '@vitejs/plugin-vue';
 import pluginBasicSsl from '@vitejs/plugin-basic-ssl';
 import path from 'path';
-import { VitePWA as pluginVitePWA } from 'vite-plugin-pwa';
+// import { VitePWA as pluginVitePWA } from 'vite-plugin-pwa';
 import { viteStaticCopy as pluginViteStaticCopy } from 'vite-plugin-static-copy';
 import pluginSitemap from 'vite-plugin-sitemap';
 import pluginAutoprefixer from 'autoprefixer';
 import routes from './src/routes';
-import pluginTsCompileServiceWorker from './src/serviceWorker/pluginTsCompileServiceWorker';
-import pluginAssetsInserter from './src/serviceWorker/pluginAssetsListGenerator';
+// import pluginTsCompileServiceWorker from './src/serviceWorker/pluginTsCompileServiceWorker';
+// import pluginAssetsInserter from './src/serviceWorker/pluginAssetsListGenerator';
 import pluginDynamicImport from 'vite-plugin-dynamic-import';
 import pluginOpenGraph from 'vite-plugin-open-graph';
 
@@ -36,7 +36,7 @@ export default defineConfig(({ mode }: { command: 'build' | 'serve'; mode: 'deve
         dynamicRoutes: Object.keys(routes).filter(route => routes[route]),
         generateRobotsTxt: true,
       }),
-      pluginTsCompileServiceWorker(),
+      // pluginTsCompileServiceWorker(),
       // pluginVitePWA({
       //   strategies: 'injectManifest',
       //   injectRegister: false,
@@ -91,10 +91,10 @@ export default defineConfig(({ mode }: { command: 'build' | 'serve'; mode: 'deve
           localeAlternate: ['en_EN', 'es_ES'],
         }
       }),
-      pluginAssetsInserter({
-        outBuildDir: 'dist',
-        additionalDirs: ['static'],
-      }),
+      // pluginAssetsInserter({
+      //   outBuildDir: 'dist',
+      //   additionalDirs: ['static'],
+      // }),
     ].concat(/true/i.test(env.VITE_HTTPS) ? [pluginBasicSsl()] : []),
     css: {
       postcss: {

@@ -94,6 +94,10 @@ quest-background = linear-gradient(100deg, #6c421e 0%, rgb(116, 73, 33) 40%, rgb
       right 0
       bottom 0
       left 0
+      background transparent
+      backdrop-filter blur(10px)
+      &.opened
+        background empColor6
 
 .quest-preview:hover
   box-shadow 10px 10px 20px colorShadow
@@ -202,6 +206,7 @@ quest-background = linear-gradient(100deg, #6c421e 0%, rgb(116, 73, 33) 40%, rgb
         v-if="branches.length > 0"
         ref="branches"
         class="branches"
+        :class="{'opened': this.branchesOpened}"
         title="Ветки"
         action-text="развернуть"
         closed
